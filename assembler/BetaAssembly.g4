@@ -24,11 +24,12 @@ if $beta.ctx is not None:
 
 // beta node
 beta_node returns[Node node]
-    : macro_call NEWLINE*     {$node = $macro_call.call }
-      | macro_inline NEWLINE+ {$node = $macro_inline.macro }
-      | macro_block NEWLINE*  {$node = $macro_block.macro }
-      | expression NEWLINE*   {$node = $expression.node }
-      | assignment NEWLINE*   {$node = $assignment.assign }
+    : macro_call     NEWLINE*   {$node = $macro_call.call }
+      | macro_inline NEWLINE+   {$node = $macro_inline.macro }
+      | macro_inline EOF        {$node = $macro_inline.macro }
+      | macro_block  NEWLINE*   {$node = $macro_block.macro }
+      | expression   NEWLINE*   {$node = $expression.node }
+      | assignment   NEWLINE*   {$node = $assignment.assign }
 ;
 
 // Identifier definition (regular identifiers + labels)
