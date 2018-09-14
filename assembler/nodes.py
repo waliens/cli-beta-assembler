@@ -28,6 +28,9 @@ class BetaTree(Node):
     def accept(self, visitor):
         visitor.visitBetaTree(self)
 
+    def __str__(self):
+        return "Beta:\n{}".format("\n".join([str(n) for n in self._nodes]))
+
 
 class Number(Atom):
     def __init__(self, hexadecimal=None, decimal=None, binary=None):
@@ -47,6 +50,9 @@ class Number(Atom):
     def accept(self, visitor):
         visitor.visitNumber(self)
 
+    def __str__(self):
+        return "Nb[{}]".format(self._value)
+
 
 class Dot(Atom):
     def __init__(self):
@@ -55,8 +61,11 @@ class Dot(Atom):
     def accept(self, visitor):
         visitor.visitDot(self)
 
+    def __str__(self):
+        return "Dot[.]"
 
-class Operator(Node):
+
+class Operator(Node, metaclass=ABCMeta):
     """AST node: generic operator"""
     def __init__(self, op, left, right):
         super(Operator, self).__init__([left, right])
@@ -67,6 +76,13 @@ class Operator(Node):
     def accept(self, visitor):
         visitor.visitOperator(self)
 
+    @abstractmethod
+    def str_op(self):
+        pass
+
+    def __str__(self):
+        return "{} {} {}".format(self._left, self.str_op(), self._right)
+
 
 class PlusOp(Operator):
     """AST node: '+' operator"""
@@ -75,6 +91,9 @@ class PlusOp(Operator):
 
     def accept(self, visitor):
         visitor.visitPlusOp(self)
+
+    def str_op(self):
+        return "+"
 
 
 class MinusOp(Operator):
@@ -85,6 +104,9 @@ class MinusOp(Operator):
     def accept(self, visitor):
         visitor.visitMinusOp(self)
 
+    def str_op(self):
+        return "-"
+
 
 class MultOp(Operator):
     """AST node: '*' operator"""
@@ -93,6 +115,9 @@ class MultOp(Operator):
 
     def accept(self, visitor):
         visitor.visitMultOp(self)
+
+    def str_op(self):
+        return "*"
 
 
 class DivOp(Operator):
@@ -103,6 +128,9 @@ class DivOp(Operator):
     def accept(self, visitor):
         visitor.visitDivOp(self)
 
+    def str_op(self):
+        return "/"
+
 
 class ModuloOp(Operator):
     """AST node: '%' operator"""
@@ -111,6 +139,9 @@ class ModuloOp(Operator):
 
     def accept(self, visitor):
         visitor.visitModuloOp(self)
+
+    def str_op(self):
+        return "%"
 
 
 class ShiftLeftOp(Operator):
@@ -121,6 +152,9 @@ class ShiftLeftOp(Operator):
     def accept(self, visitor):
         visitor.visitShiftLeftOp(self)
 
+    def str_op(self):
+        return "<<"
+
 
 class ShiftRightOp(Operator):
     """AST node: '>>' operator"""
@@ -129,6 +163,9 @@ class ShiftRightOp(Operator):
 
     def accept(self, visitor):
         visitor.visitShiftRightOp(self)
+
+    def str_op(self):
+        return ">>"
 
 
 class Identifier(Node):
@@ -139,6 +176,9 @@ class Identifier(Node):
     def accept(self, visitor):
         visitor.visitIdentifier(self)
 
+    def __str__(self):
+        return "Id[{}]".format(self._name)
+
 
 class Assignment(Node):
     def __init__(self, identifier, assigned):
@@ -148,6 +188,9 @@ class Assignment(Node):
 
     def accept(self, visitor):
         visitor.visitAssignment(self)
+
+    def __str__(self):
+        return "{} <- {}".format(self._identifier, self._assigned)
 
 
 class Macro(Node):
@@ -160,6 +203,9 @@ class Macro(Node):
     def accept(self, visitor):
         visitor.visitMacro(self)
 
+    def __str__(self):
+        return "Macro[{}({})]".format(self._name, ", ".join(self._arguments))
+
 
 class MacroCall(Node):
     def __init__(self, name, parameters):
@@ -169,6 +215,9 @@ class MacroCall(Node):
 
     def accept(self, visitor):
         visitor.visitMacroCall(self)
+
+    def __str__(self):
+        return "MacroCall[{}({})]".format(self._name, ", ".join(self._parameters))
 
 
 
