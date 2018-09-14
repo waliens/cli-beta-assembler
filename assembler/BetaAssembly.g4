@@ -24,31 +24,31 @@ if $beta.ctx is not None:
 
 // beta node
 beta_node returns[Node node]
-    : macro_call NEWLINE*    {$node = $macro_call.call }
-      | macro_inline NEWLINE {$node = $macro_inline.macro }
-      | macro_block NEWLINE* {$node = $macro_block.macro }
-      | expression NEWLINE*  {$node = $expression.expr }
-      | assignment NEWLINE*  {$node = $assignment.assign }
+    : macro_call NEWLINE*     {$node = $macro_call.call }
+      | macro_inline NEWLINE+ {$node = $macro_inline.macro }
+      | macro_block NEWLINE*  {$node = $macro_block.macro }
+      | expression NEWLINE*   {$node = $expression.node }
+      | assignment NEWLINE*   {$node = $assignment.assign }
 ;
 
 // Identifier definition (regular identifiers + labels)
 assignment returns[Assignment assign]
-    : IDENTIFIER EQUAL expression {$assign = Assignment($IDENTIFIER.text, $expression.expr) }
+    : IDENTIFIER EQUAL expression {$assign = Assignment($IDENTIFIER.text, $expression.node) }
       | IDENTIFIER ':'            {$assign = Assignment($IDENTIFIER.text, Dot()) }
 ;
 
 // Expression
-expression returns[Expression expr]
-    : '(' expression ')'                             {$expr = $expression.expr }
-      |<assoc=right> a=expression MOD   b=expression {$expr = ModuloOp($a.expr, $b.expr) }
-      |              a=expression DIV   b=expression {$expr = DivOp($a.expr, $b.expr) }
-      |              a=expression MULT  b=expression {$expr = MultOp($a.expr, $b.expr) }
-      |              a=expression PLUS  b=expression {$expr = PlusOp($a.expr, $b.expr) }
-      |              a=expression MINUS b=expression {$expr = MinusOp($a.expr, $b.expr) }
-      |              a=expression SHL   b=expression {$expr = ShiftLeftOp($a.expr, $b.expr) }
-      |              a=expression SHR   b=expression {$expr = ShiftRightOp($a.expr, $b.expr) }
-      | atom                                         {$expr = $atom.a }
-      | IDENTIFIER                                   {$expr = Identifier($IDENTIFIER.text) }
+expression returns[Node node]
+    : '(' expression ')'                             {$node = $expression.node }
+      |<assoc=right> a=expression MOD   b=expression {$node = ModuloOp($a.node, $b.node) }
+      |              a=expression DIV   b=expression {$node = DivOp($a.node, $b.node) }
+      |              a=expression MULT  b=expression {$node = MultOp($a.node, $b.node) }
+      |              a=expression PLUS  b=expression {$node = PlusOp($a.node, $b.node) }
+      |              a=expression MINUS b=expression {$node = MinusOp($a.node, $b.node) }
+      |              a=expression SHL   b=expression {$node = ShiftLeftOp($a.node, $b.node) }
+      |              a=expression SHR   b=expression {$node = ShiftRightOp($a.node, $b.node) }
+      | atom                                         {$node = $atom.a }
+      | IDENTIFIER                                   {$node = Identifier($IDENTIFIER.text) }
 ;
 
 // Atoms: numbers and dot identifier
@@ -78,12 +78,12 @@ if $macro_params.ctx is not None:
 
 macro_def returns[list definition]
     : expression (macro_def) ?   {
-$definition = [Expression($expression.expr)]
+$definition = [$expression.node]
 if $macro_def.ctx is not None:
     $definition.extend($macro_def.definition)
 }
       | macro_call (macro_def) ? {
-$definition = [Expression($macro_call.call)]
+$definition = [$macro_call.call]
 if $macro_def.ctx is not None:
     $definition.extend($macro_def.definition)
 }
@@ -101,7 +101,7 @@ if $macro_call_params.ctx is not None:
     $params.extend($macro_call_params.params)
 }
         | expression (',' macro_call_params) ? {
-$params = [$expression.expr]
+$params = [$expression.node]
 if $macro_call_params.ctx is not None:
     $params.extend($macro_call_params.params)
 }
@@ -115,8 +115,8 @@ NB_HEXA   : '0x'[0-9A-Fa-f]+ ;
 MACRO     : '.macro' ;
 INCLUDE   : '.include' ;
 DOT       : '.' ;
-WSPACE    : [ \t]+ -> channel(HIDDEN) ;
-NEWLINE  : [\r\n]+ ;
+WSPACE    : [ \t]+ -> skip ;
+NEWLINE  : [\r\n] ;
 COMMENT   : '|'';'? .*? ~[\r\n]* -> skip ;
 EXP       : '^' ;
 DIV       : '/' ;

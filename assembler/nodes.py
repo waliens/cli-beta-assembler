@@ -51,7 +51,7 @@ class Number(Atom):
         visitor.visitNumber(self)
 
     def __str__(self):
-        return "Nb[{}]".format(self._value)
+        return "{}".format(self._value)
 
 
 class Dot(Atom):
@@ -62,7 +62,7 @@ class Dot(Atom):
         visitor.visitDot(self)
 
     def __str__(self):
-        return "Dot[.]"
+        return "."
 
 
 class Operator(Node, metaclass=ABCMeta):
@@ -177,7 +177,7 @@ class Identifier(Node):
         visitor.visitIdentifier(self)
 
     def __str__(self):
-        return "Id[{}]".format(self._name)
+        return "{}".format(self._name)
 
 
 class Assignment(Node):
@@ -204,7 +204,7 @@ class Macro(Node):
         visitor.visitMacro(self)
 
     def __str__(self):
-        return "Macro[{}({})]".format(self._name, ", ".join(self._arguments))
+        return ".macro {}({}) <- {}".format(self._name, ", ".join([str(a) for a in self._arguments]), [str(n) for n in self._body])
 
 
 class MacroCall(Node):
@@ -217,7 +217,6 @@ class MacroCall(Node):
         visitor.visitMacroCall(self)
 
     def __str__(self):
-        return "MacroCall[{}({})]".format(self._name, ", ".join(self._parameters))
-
+        return "{}({})".format(self._name, ", ".join([str(p) for p in self._parameters]))
 
 
