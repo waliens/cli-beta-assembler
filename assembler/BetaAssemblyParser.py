@@ -539,7 +539,7 @@ class BetaAssemblyParser ( Parser ):
             elif token in [BetaAssemblyParser.NB_DECIMAL, BetaAssemblyParser.NB_BINARY, BetaAssemblyParser.NB_HEXA, BetaAssemblyParser.DOT]:
                 self.state = 91
                 localctx._atom = self.atom()
-                localctx.expr = Atom(localctx._atom.a) 
+                localctx.expr = localctx._atom.a 
                 pass
             elif token in [BetaAssemblyParser.IDENTIFIER]:
                 self.state = 94

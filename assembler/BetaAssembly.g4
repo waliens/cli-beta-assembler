@@ -47,7 +47,7 @@ expression returns[Expression expr]
       |              a=expression MINUS b=expression {$expr = MinusOp($a.expr, $b.expr) }
       |              a=expression SHL   b=expression {$expr = ShiftLeftOp($a.expr, $b.expr) }
       |              a=expression SHR   b=expression {$expr = ShiftRightOp($a.expr, $b.expr) }
-      | atom                                         {$expr = Atom($atom.a) }
+      | atom                                         {$expr = $atom.a }
       | IDENTIFIER                                   {$expr = Identifier($IDENTIFIER.text) }
 ;
 
