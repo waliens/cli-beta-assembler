@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from operator import add, sub, mul, truediv, pow
+from operator import add, sub, mul, truediv, pow, neg
 
 
 class Node(metaclass=ABCMeta):
@@ -65,16 +65,46 @@ class Dot(Atom):
         return "."
 
 
-class Operator(Node, metaclass=ABCMeta):
-    """AST node: generic operator"""
+class UnaryOperator(Node, metaclass=ABCMeta):
+    """AST node: generic unary operator"""
+    def __init__(self, op, expr):
+        super(UnaryOperator, self).__init__([expr])
+        self._op = op
+        self._expr = expr
+
+    def accept(self, visitor):
+        visitor.visitUnaryOperator(self)
+
+    @abstractmethod
+    def str_op(self):
+        pass
+
+    def __str__(self):
+        return "{}({})".format(self.str_op(), self._expr)
+
+
+class NegateOp(UnaryOperator):
+    """AST node: '+' operator"""
+    def __init__(self, expr):
+        super(NegateOp, self).__init__(neg, expr)
+
+    def accept(self, visitor):
+        visitor.visitNegateOp(self)
+
+    def str_op(self):
+        return "-"
+
+
+class BinaryOperator(Node, metaclass=ABCMeta):
+    """AST node: generic binary operator"""
     def __init__(self, op, left, right):
-        super(Operator, self).__init__([left, right])
+        super(BinaryOperator, self).__init__([left, right])
         self._op = op
         self._left = left
         self._right = right
 
     def accept(self, visitor):
-        visitor.visitOperator(self)
+        visitor.visitBinaryOperator(self)
 
     @abstractmethod
     def str_op(self):
@@ -84,7 +114,7 @@ class Operator(Node, metaclass=ABCMeta):
         return "{} {} {}".format(self._left, self.str_op(), self._right)
 
 
-class PlusOp(Operator):
+class PlusOp(BinaryOperator):
     """AST node: '+' operator"""
     def __init__(self, left, right):
         super(PlusOp, self).__init__(add, left, right)
@@ -96,7 +126,7 @@ class PlusOp(Operator):
         return "+"
 
 
-class MinusOp(Operator):
+class MinusOp(BinaryOperator):
     """AST node: '-' operator"""
     def __init__(self, left, right):
         super(MinusOp, self).__init__(sub, left, right)
@@ -108,7 +138,7 @@ class MinusOp(Operator):
         return "-"
 
 
-class MultOp(Operator):
+class MultOp(BinaryOperator):
     """AST node: '*' operator"""
     def __init__(self, left, right):
         super(MultOp, self).__init__(mul, left, right)
@@ -120,7 +150,7 @@ class MultOp(Operator):
         return "*"
 
 
-class DivOp(Operator):
+class DivOp(BinaryOperator):
     """AST node: '/' operator"""
     def __init__(self, left, right):
         super(DivOp, self).__init__(truediv, left, right)
@@ -132,7 +162,7 @@ class DivOp(Operator):
         return "/"
 
 
-class ModuloOp(Operator):
+class ModuloOp(BinaryOperator):
     """AST node: '%' operator"""
     def __init__(self, left, right):
         super(ModuloOp, self).__init__(truediv, left, right)
@@ -144,7 +174,7 @@ class ModuloOp(Operator):
         return "%"
 
 
-class ShiftLeftOp(Operator):
+class ShiftLeftOp(BinaryOperator):
     """AST node: '<<' operator"""
     def __init__(self, left, right):
         super(ShiftLeftOp, self).__init__(truediv, left, right)
@@ -156,7 +186,7 @@ class ShiftLeftOp(Operator):
         return "<<"
 
 
-class ShiftRightOp(Operator):
+class ShiftRightOp(BinaryOperator):
     """AST node: '>>' operator"""
     def __init__(self, left, right):
         super(ShiftRightOp, self).__init__(truediv, left, right)

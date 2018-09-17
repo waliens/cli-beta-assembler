@@ -29,8 +29,8 @@ class BetaAssemblySyntaxError(BetaAssemblyError):
         self._column = column
         self._msg = msg
         self._e = e
-        super(BetaAssemblySyntaxError, self).__init__("SyntaxError: offending symbol '{}' in BetaAssembly at {}:{} (msg: {})".format(
-            self._offending_symbol, self._line, self._column, self._msg
+        super(BetaAssemblySyntaxError, self).__init__("SyntaxError: offending symbol '{}' in BetaAssembly at {}:{} (msg: {}) (e: {})".format(
+            self._offending_symbol, self._line, self._column, self._msg, str(e)
         ))
 
 
@@ -58,8 +58,9 @@ class BetaAssemblyAttemptingFullContextError(BetaAssemblyError):
         self._stop = stop
         self._conflictingAlts = conflictingAlts
         self._configs = configs
-        super(BetaAssemblyAttemptingFullContextError, self).__init__("SyntaxError: attempting full context in BetaAssembly at {}:{}".format(
-            self._start, self._stop
+        super(BetaAssemblyAttemptingFullContextError, self).__init__(
+            "SyntaxError: attempting full context in BetaAssembly at {}:{}\n{}".format(
+            self._start, self._stop, self._conflictingAlts
         ))
 
 
