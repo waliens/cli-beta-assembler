@@ -50,6 +50,10 @@ class Number(Atom):
     def accept(self, visitor):
         visitor.visitNumber(self)
 
+    @property
+    def value(self):
+        return self._value
+
     def __str__(self):
         return "{}".format(self._value)
 

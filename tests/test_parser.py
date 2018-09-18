@@ -4,6 +4,7 @@ from antlr4 import InputStream
 
 from assembler.BetaAssemblyLexer import BetaAssemblyLexer, CommonTokenStream
 from assembler.BetaAssemblyParser import BetaAssemblyParser
+from assembler.nodes import Number
 from assembler.tester import BetaAssemblyErrorListener
 
 
@@ -17,7 +18,7 @@ def parse_string(content):
 
 class TestGrammar(TestCase):
     def _parse(self, content):
-        parse_string(content)
+        return parse_string(content)
 
     def testEmptyFile(self):
         self._parse("")
@@ -31,21 +32,31 @@ class TestGrammar(TestCase):
 """)
 
     def testSimpleByte(self):
-        self._parse("""0x0""")
+        beta = """0x0"""
+        self.assertEqual(1, len(self._parse(beta).children), msg=beta)
 
     def testSeveralBytes(self):
-        self._parse("""0x0 0x0
-0x0""")
+        beta = """0x0 0x0
+0x0"""
+        self.assertEqual(3, len(self._parse(beta).children), msg=beta)
 
     def testUnaryExpression(self):
-        self._parse("""-2-2""")
-        self._parse("""-1+(-1+23-5)""")
+        betas = ["""-2-2""", """-1+(-1+23-5)""", """~21"""]
+        for beta in betas:
+            self.assertEqual(1, len(self._parse(beta).children), msg="Check beta '{}'".format(beta))
 
     def testNumbers(self):
-        self._parse("""0x0 0 0b0 0xABCDEFabcdef1234567890 0b01""")
+        beta = """0x0 0 0b0 0xABCDEF 0xabcdef 0x1234567890 0b01"""
+        tree = self._parse(beta)
+        numbers = [int(v, {"0x": 16, "0b": 2}.get(v[:2], 10)) for v in beta.split(" ")]
+        self.assertEqual(len(numbers), len(tree.children))
+        for i, nb in enumerate(numbers):
+            number = beta.split(" ")[i]
+            self.assertIsInstance(tree.children[i], Number, msg="Node type for {}".format(number))
+            self.assertEqual(nb, tree.children[i].value, msg="Number value for {}".format(number))
 
     def testExpression(self):
-        self._parse("""| arithmetic
+        tree = self._parse("""| arithmetic
 0+0 99-4357 2/1 7*2
 10%5 10<<5 6>>7
 
@@ -56,8 +67,11 @@ a+1 b+2 a+c c+a+1%2*1
 | with parenthesis
 a-(1) (2+a) 2+(a-2)
 (OP<<26)+((Rc%32)<<21)+((Ra%32)<<16)+((Rb%32)<<11)""")
+        self.assertEqual(16, len(tree.children))
 
-    @skip
     def testAssignment(self):
-        self._parse("""a=1 b = 2""")
+        tree = self._parse("""a=1 b = 2""")
+        self.assertEqual(2, len(tree.children))
+
+
 
