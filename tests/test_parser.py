@@ -37,8 +37,12 @@ class TestGrammar(TestCase):
         self._parse("""0x0 0x0
 0x0""")
 
+    def testUnaryExpression(self):
+        self._parse("""-2-2""")
+        self._parse("""-1+(-1+23-5)""")
+
     def testNumbers(self):
-        self._parse("""0x0 0 0b0 0xABCDEFabcdef1234567890 0b01 -2 -0""")
+        self._parse("""0x0 0 0b0 0xABCDEFabcdef1234567890 0b01""")
 
     def testExpression(self):
         self._parse("""| arithmetic

@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from operator import add, sub, mul, truediv, pow, neg
+from operator import add, sub, mul, truediv, neg, inv
 
 
 class Node(metaclass=ABCMeta):
@@ -80,11 +80,11 @@ class UnaryOperator(Node, metaclass=ABCMeta):
         pass
 
     def __str__(self):
-        return "{}{}".format(self.str_op(), self._expr)
+        return "{}({})".format(self.str_op(), self._expr)
 
 
 class NegateOp(UnaryOperator):
-    """AST node: '+' operator"""
+    """AST node: '-' operator"""
     def __init__(self, expr):
         super(NegateOp, self).__init__(neg, expr)
 
@@ -93,6 +93,18 @@ class NegateOp(UnaryOperator):
 
     def str_op(self):
         return "-"
+
+
+class BitwiseComplementOp(UnaryOperator):
+    """AST node: '~' operator"""
+    def __init__(self, expr):
+        super(BitwiseComplementOp, self).__init__(neg, expr)
+
+    def accept(self, visitor):
+        visitor.visitBitwiseComplementOp(self)
+
+    def str_op(self):
+        return "~"
 
 
 class BinaryOperator(Node, metaclass=ABCMeta):

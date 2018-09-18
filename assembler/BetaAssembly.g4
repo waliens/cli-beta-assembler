@@ -5,7 +5,7 @@ grammar BetaAssembly;
 options { language=Python3; }
 
 @header {
-from .nodes import BetaTree, Node, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, Assignment, Macro, MacroCall
+from .nodes import BetaTree, Node, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroCall
 
 def extend_if_exists(l, child, access_fn):
     if child.ctx is not None:
@@ -42,51 +42,35 @@ if $beta_items.ctx is not None:
 beta returns[list nodes]
     : expression                {$nodes = [$expression.node] }
       | assignment              {$nodes = [$assignment.assign] }
-      | non_expression (unary)? {
-$nodes = [$non_expression.node]
-if $unary.ctx is not None:
-    $nodes.append($unary.node)
-}
 ;
 
-non_expression returns[Node node]
-    : macro_block          {$node = $macro_block.macro }
-//      macro_call             {$node = $macro_call.call }
+//non_expression returns[Node node]
+//    :
+//      | macro_block          {$node = $macro_block.macro }
+//      | macro_call             {$node = $macro_call.call }
 //      | macro_inline NEWLINE {$node = $macro_inline.macro }
 //      | macro_inline EOF     {$node = $macro_inline.macro }
-;
+//;
 
 // Identifier definition (regular identifiers + labels)
 assignment returns[Assignment assign]
     : IDENTIFIER EQUAL expression {$assign = Assignment($IDENTIFIER.text, $expression.node) }
+      | IDENTIFIER EQUAL unary    {$assign = Assignment($IDENTIFIER.text, $unary.node) }
       | IDENTIFIER ':'            {$assign = Assignment($IDENTIFIER.text, Dot()) }
 ;
-
-
-// Expression with parenthesis
-//expression returns[Node node]
-//    :   a=expression MOD   b=expression {$node = ModuloOp($a.node, $b.node) }
-//      | a=expression DIV   b=expression {$node = DivOp($a.node, $b.node) }
-//      | a=expression MULT  b=expression {$node = MultOp($a.node, $b.node) }
-//      | a=expression PLUS  b=expression {$node = PlusOp($a.node, $b.node) }
-//      | a=expression MINUS b=expression {$node = MinusOp($a.node, $b.node) }
-//      | a=expression SHL   b=expression {$node = ShiftLeftOp($a.node, $b.node) }
-//      | a=expression SHR   b=expression {$node = ShiftRightOp($a.node, $b.node) }
-//;
-
 
 // Expression with parenthesis
 expression returns[Node node]
     : '(' expression ')'                              {$node = $expression.node }
       | atom                                          {$node = $atom.a }
-      | <assoc=right> a=expression MOD   b=expression {$node = ModuloOp($a.node, $b.node) }
-      |               a=expression DIV   b=expression {$node = DivOp($a.node, $b.node) }
+      | <assoc=right> a=expression MOD b=expression   {$node = ModuloOp($a.node, $b.node) }
       |               a=expression MULT  b=expression {$node = MultOp($a.node, $b.node) }
+      |               a=expression DIV   b=expression {$node = DivOp($a.node, $b.node) }
       |               a=expression PLUS  b=expression {$node = PlusOp($a.node, $b.node) }
       |               a=expression MINUS b=expression {$node = MinusOp($a.node, $b.node) }
       |               a=expression SHL   b=expression {$node = ShiftLeftOp($a.node, $b.node) }
       |               a=expression SHR   b=expression {$node = ShiftRightOp($a.node, $b.node) }
-      | '(' unary ')'                                 {$node = NegateOp($expression.node) }
+      | '(' unary ')'                                 {$node = $unary.node }
 ;
 
 // Atoms: numbers, dot and identifier
@@ -100,7 +84,8 @@ atom returns[Atom a]
 
 // Unary operators
 unary returns[Node node]
-    : MINUS expression    {$node = NegateOp($expression.node) }
+    : MINUS expression   {$node = NegateOp($expression.node) }
+      | COMPL expression {$node = BitwiseComplementOp($expression.node) }
 ;
 
 //// Macro definition (e.g. `.macro ADD(Ra, Rb, Rc) `)
@@ -108,17 +93,17 @@ unary returns[Node node]
 //    : MACRO IDENTIFIER '(' macro_params ')' macro_def {$macro = Macro($IDENTIFIER.text, $macro_params.params, $macro_def.definition) }
 //;
 //
-macro_block returns[Macro macro]
-    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta '}' {$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta.nodes) }
-;
-//
-macro_params returns[list params]
-    : IDENTIFIER (',' macro_params) ? {
-$params = [Identifier($IDENTIFIER.text)]
-if $macro_params.ctx is not None:
-    $params.extend($macro_params.params)
-}
-;
+//macro_block returns[Macro macro]
+//    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta '}' {$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta.nodes) }
+//;
+////
+//macro_params returns[list params]
+//    : IDENTIFIER (',' macro_params) ? {
+//$params = [Identifier($IDENTIFIER.text)]
+//if $macro_params.ctx is not None:
+//    $params.extend($macro_params.params)
+//}
+//;
 //
 //macro_def returns[list definition]
 //    : expression (macro_def) ?   {
@@ -166,3 +151,4 @@ EQUAL     : '=' ;
 SHR       : '>>' ;
 SHL       : '<<' ;
 MOD       : '%' ;
+COMPL     : '~' ;
