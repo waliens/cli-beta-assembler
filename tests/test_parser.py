@@ -4,7 +4,7 @@ from antlr4 import InputStream
 
 from assembler.BetaAssemblyLexer import BetaAssemblyLexer, CommonTokenStream
 from assembler.BetaAssemblyParser import BetaAssemblyParser
-from assembler.nodes import Number
+from assembler.nodes import Number, Macro
 from assembler.tester import BetaAssemblyErrorListener
 
 
@@ -41,9 +41,10 @@ class TestGrammar(TestCase):
         self.assertEqual(3, len(self._parse(beta).children), msg=beta)
 
     def testUnaryExpression(self):
-        betas = ["""-2-2""", """-1+(-1+23-5)""", """~21"""]
+        betas = ["""-2-2""", """-1+(-1+23-5)""", """~21""", "-1 2"]
         for beta in betas:
-            self.assertEqual(1, len(self._parse(beta).children), msg="Check beta '{}'".format(beta))
+            n_numbers = len(beta.split(" "))
+            self.assertEqual(n_numbers, len(self._parse(beta).children), msg="Check beta '{}'".format(beta))
 
     def testNumbers(self):
         beta = """0x0 0 0b0 0xABCDEF 0xabcdef 0x1234567890 0b01"""
@@ -72,6 +73,20 @@ a-(1) (2+a) 2+(a-2)
     def testAssignment(self):
         tree = self._parse("""a=1 b = 2""")
         self.assertEqual(2, len(tree.children))
+
+    def testSimpleMacro(self):
+        tree = self._parse(""".macro ADD(a,b,c) {
+ 0x0
+}""")
+        macro = tree.children[0]
+        self.assertIsInstance(macro, Macro)
+        self.assertEqual(3, len(macro.arguments))
+        self.assertEqual("a", macro.arguments[0].name)
+        self.assertEqual("b", macro.arguments[1].name)
+        self.assertEqual("c", macro.arguments[2].name)
+        self.assertEqual(1, len(macro.body))
+        self.assertIsInstance(macro.body[0], Number)
+        self.assertEqual(macro.body[0].value, 0)
 
 
 

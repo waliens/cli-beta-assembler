@@ -225,6 +225,10 @@ class Identifier(Node):
     def __str__(self):
         return "{}".format(self._name)
 
+    @property
+    def name(self):
+        return self._name
+
 
 class Assignment(Node):
     def __init__(self, identifier, assigned):
@@ -252,15 +256,31 @@ class Macro(Node):
     def __str__(self):
         return ".macro {}({}) <- {}".format(self._name, ", ".join([str(a) for a in self._arguments]), [str(n) for n in self._body])
 
+    @property
+    def name(self):
+        return self._name
 
-class MacroCall(Node):
+    @property
+    def args(self):
+        return self._arguments
+
+    @property
+    def arguments(self):
+        return self._arguments
+
+    @property
+    def body(self):
+        return self._body
+
+
+class MacroInvocation(Node):
     def __init__(self, name, parameters):
-        super(MacroCall, self).__init__(children=[name, parameters])
+        super(MacroInvocation, self).__init__(children=[name, parameters])
         self._name = name
         self._parameters = parameters
 
     def accept(self, visitor):
-        visitor.visitMacroCall(self)
+        visitor.visitMacroInvocation(self)
 
     def __str__(self):
         return "{}({})".format(self._name, ", ".join([str(p) for p in self._parameters]))

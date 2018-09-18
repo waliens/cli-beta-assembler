@@ -5,7 +5,7 @@ grammar BetaAssembly;
 options { language=Python3; }
 
 @header {
-from .nodes import BetaTree, Node, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroCall
+from .nodes import BetaTree, Node, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
 
 def extend_if_exists(l, child, access_fn):
     if child.ctx is not None:
@@ -42,15 +42,15 @@ if $beta_items.ctx is not None:
 beta returns[list nodes]
     : expression                {$nodes = [$expression.node] }
       | assignment              {$nodes = [$assignment.assign] }
+      | non_expression          {$nodes = [$non_expression.node] }
 ;
 
-//non_expression returns[Node node]
-//    :
-//      | macro_block          {$node = $macro_block.macro }
+non_expression returns[Node node]
+    : macro_def_body          {$node = $macro_def_body.macro }
 //      | macro_call             {$node = $macro_call.call }
-//      | macro_inline NEWLINE {$node = $macro_inline.macro }
-//      | macro_inline EOF     {$node = $macro_inline.macro }
-//;
+//      | macro_def_line NEWLINE {$node = $macro_def_line.macro }
+//      | macro_def_line EOF     {$node = $macro_def_line.macro }
+;
 
 // Identifier definition (regular identifiers + labels)
 assignment returns[Assignment assign]
@@ -89,21 +89,21 @@ unary returns[Node node]
 ;
 
 //// Macro definition (e.g. `.macro ADD(Ra, Rb, Rc) `)
-//macro_inline returns[Macro macro]
+//macro_def_line returns[Macro macro]
 //    : MACRO IDENTIFIER '(' macro_params ')' macro_def {$macro = Macro($IDENTIFIER.text, $macro_params.params, $macro_def.definition) }
 //;
 //
-//macro_block returns[Macro macro]
-//    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta '}' {$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta.nodes) }
-//;
-////
-//macro_params returns[list params]
-//    : IDENTIFIER (',' macro_params) ? {
-//$params = [Identifier($IDENTIFIER.text)]
-//if $macro_params.ctx is not None:
-//    $params.extend($macro_params.params)
-//}
-//;
+macro_def_body returns[Macro macro]
+    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta NEWLINE* '}' {$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta.nodes) }
+;
+//
+macro_params returns[list params]
+    : IDENTIFIER (',' macro_params) ? {
+$params = [Identifier($IDENTIFIER.text)]
+if $macro_params.ctx is not None:
+    $params.extend($macro_params.params)
+}
+;
 //
 //macro_def returns[list definition]
 //    : expression (macro_def) ?   {
@@ -119,8 +119,8 @@ unary returns[Node node]
 //;
 
 //// Macro calls (e.g. ADD(R1, r3, R4), LD(R1, 0x4, R6),...)
-//macro_call returns[MacroCall call]
-//    : IDENTIFIER '(' macro_call_params ')' {$call = MacroCall($IDENTIFIER.text, $macro_call_params.params) }
+//macro_call returns[MacroInvocation call]
+//    : IDENTIFIER '(' macro_call_params ')' {$call = MacroInvocation($IDENTIFIER.text, $macro_call_params.params) }
 //;
 //
 //macro_call_params returns[list params]
