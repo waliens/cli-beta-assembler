@@ -80,7 +80,7 @@ class UnaryOperator(Node, metaclass=ABCMeta):
         pass
 
     def __str__(self):
-        return "{}({})".format(self.str_op(), self._expr)
+        return "{}{}".format(self.str_op(), self._expr)
 
 
 class NegateOp(UnaryOperator):

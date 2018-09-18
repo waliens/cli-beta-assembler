@@ -6,40 +6,61 @@ options { language=Python3; }
 
 @header {
 from .nodes import BetaTree, Node, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, Assignment, Macro, MacroCall
+
+def extend_if_exists(l, child, access_fn):
+    if child.ctx is not None:
+        l.extend(access_fn(child))
+    return l
 }
 
 // Parser rules
 start returns[BetaTree beta_tree]
-    : NEWLINE* beta NEWLINE* EOF {$beta_tree = BetaTree($beta.nodes) }
-      | NEWLINE* EOF {$beta_tree = BetaTree([]) }
+    : NEWLINE* beta_block NEWLINE* EOF {$beta_tree = BetaTree($beta_block.nodes) }
+      | NEWLINE* EOF                   {$beta_tree = BetaTree([]) }
 ;
 
-// beta
-beta returns[list nodes]
-    : beta_node (NEWLINE* beta) ? {
-$nodes = [$beta_node.node]
-if $beta.ctx is not None:
-    $nodes.extend($beta.nodes)
+// A beta block is a block of beta language elements (possibly starting with a unary expression)
+beta_block returns[list nodes]
+    : unary (NEWLINE* beta_items) ? {
+$nodes = [$unary.node]
+if $beta_items.ctx is not None:
+    $nodes.extend($beta_items.nodes)
+}
+      | beta_items {$nodes = $beta_items.nodes }
+;
+
+// Sequence of beta language elements
+beta_items returns[list nodes]
+    : beta (NEWLINE* beta_items) ? {
+$nodes = $beta.nodes
+if $beta_items.ctx is not None:
+    $nodes.extend($beta_items.nodes)
 }
 ;
 
-// beta node
-beta_node returns[Node node]
-    :
+// A beta element can be an expression, an assignment or a non expression (possibly followed by a unary expression)
+beta returns[list nodes]
+    : expression                {$nodes = [$expression.node] }
+      | assignment              {$nodes = [$assignment.assign] }
+      | non_expression (unary)? {
+$nodes = [$non_expression.node]
+if $unary.ctx is not None:
+    $nodes.append($unary.node)
+}
+;
+
+non_expression returns[Node node]
+    : macro_block          {$node = $macro_block.macro }
 //      macro_call             {$node = $macro_call.call }
 //      | macro_inline NEWLINE {$node = $macro_inline.macro }
 //      | macro_inline EOF     {$node = $macro_inline.macro }
-//      | macro_block          {$node = $macro_block.macro }
-       expression           {$node = $expression.node }
-//      | atom                 {$node = $atom.a            }
-//      | assignment           {$node = $assignment.assign }
 ;
 
 // Identifier definition (regular identifiers + labels)
-//assignment returns[Assignment assign]
-//    : IDENTIFIER EQUAL expression {$assign = Assignment($IDENTIFIER.text, $expression.node) }
-//      | IDENTIFIER ':'            {$assign = Assignment($IDENTIFIER.text, Dot()) }
-//;
+assignment returns[Assignment assign]
+    : IDENTIFIER EQUAL expression {$assign = Assignment($IDENTIFIER.text, $expression.node) }
+      | IDENTIFIER ':'            {$assign = Assignment($IDENTIFIER.text, Dot()) }
+;
 
 
 // Expression with parenthesis
@@ -65,7 +86,7 @@ expression returns[Node node]
       |               a=expression MINUS b=expression {$node = MinusOp($a.node, $b.node) }
       |               a=expression SHL   b=expression {$node = ShiftLeftOp($a.node, $b.node) }
       |               a=expression SHR   b=expression {$node = ShiftRightOp($a.node, $b.node) }
-//      | '(' MINUS expression ')'                      {$node = NegateOp($expression.node) }
+      | '(' unary ')'                                 {$node = NegateOp($expression.node) }
 ;
 
 // Atoms: numbers, dot and identifier
@@ -77,22 +98,27 @@ atom returns[Atom a]
       | IDENTIFIER  {$a = Identifier($IDENTIFIER.text) }
 ;
 
+// Unary operators
+unary returns[Node node]
+    : MINUS expression    {$node = NegateOp($expression.node) }
+;
+
 //// Macro definition (e.g. `.macro ADD(Ra, Rb, Rc) `)
 //macro_inline returns[Macro macro]
 //    : MACRO IDENTIFIER '(' macro_params ')' macro_def {$macro = Macro($IDENTIFIER.text, $macro_params.params, $macro_def.definition) }
 //;
 //
-//macro_block returns[Macro macro]
-//    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta '}' {$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta.nodes) }
-//;
+macro_block returns[Macro macro]
+    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta '}' {$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta.nodes) }
+;
 //
-//macro_params returns[list params]
-//    : IDENTIFIER (',' macro_params) ? {
-//$params = [Identifier($IDENTIFIER.text)]
-//if $macro_params.ctx is not None:
-//    $params.extend($macro_params.params)
-//}
-//;
+macro_params returns[list params]
+    : IDENTIFIER (',' macro_params) ? {
+$params = [Identifier($IDENTIFIER.text)]
+if $macro_params.ctx is not None:
+    $params.extend($macro_params.params)
+}
+;
 //
 //macro_def returns[list definition]
 //    : expression (macro_def) ?   {
