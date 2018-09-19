@@ -42,7 +42,6 @@ if $beta_items.ctx is not None:
 beta returns[list nodes]
     : expression                {$nodes = [$expression.node] }
       | assignment              {$nodes = [$assignment.assign] }
-      | non_expression          {$nodes = [$non_expression.node] }
       | non_expression (unary)? {
 $nodes = [$non_expression.node]
 if $unary.ctx is not None:
@@ -99,9 +98,9 @@ unary returns[Node node]
 //;
 //
 macro_def_body returns[Macro macro]
-    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta NEWLINE* '}' {$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta.nodes) }
+    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta_block NEWLINE* '}' {$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta_block.nodes) }
 ;
-//
+
 macro_params returns[list params]
     : IDENTIFIER (',' macro_params) ? {
 $params = [Identifier($IDENTIFIER.text)]
@@ -109,7 +108,7 @@ if $macro_params.ctx is not None:
     $params.extend($macro_params.params)
 }
 ;
-//
+
 //macro_def returns[list definition]
 //    : expression (macro_def) ?   {
 //$definition = [$expression.node]

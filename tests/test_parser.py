@@ -4,7 +4,8 @@ from antlr4 import InputStream
 
 from assembler.BetaAssemblyLexer import BetaAssemblyLexer, CommonTokenStream
 from assembler.BetaAssemblyParser import BetaAssemblyParser
-from assembler.nodes import Number, Macro, NegateOp
+from assembler.exceptions import BetaAssemblySyntaxError
+from assembler.nodes import Number, Macro, NegateOp, PlusOp, MultOp, Assignment
 from assembler.tester import BetaAssemblyErrorListener
 
 
@@ -80,6 +81,7 @@ a-(1) (2+a) 2+(a-2)
 }""")
         macro = tree.children[0]
         self.assertIsInstance(macro, Macro)
+        self.assertEqual("ADD", macro.name)
         self.assertEqual(3, len(macro.arguments))
         self.assertEqual("a", macro.arguments[0].name)
         self.assertEqual("b", macro.arguments[1].name)
@@ -94,5 +96,24 @@ a-(1) (2+a) 2+(a-2)
         self.assertIsInstance(tree.children[0], Macro)
         self.assertIsInstance(tree.children[1], NegateOp)
 
+    def testMacroBody(self):
+        tree = self._parse(""".macro ADD(a,b,c) {
+a+b+c a*b*c
+a = 2 b = 3 
+}""")
+        macro = tree.children[0]
+        self.assertEqual("ADD", macro.name)
+        self.assertEqual(3, len(macro.arguments))
+        self.assertEqual("a", macro.arguments[0].name)
+        self.assertEqual("b", macro.arguments[1].name)
+        self.assertEqual("c", macro.arguments[2].name)
+        self.assertEqual(4, len(macro.body))
+        self.assertIsInstance(macro.body[0], PlusOp)
+        self.assertIsInstance(macro.body[1], MultOp)
+        self.assertIsInstance(macro.body[2], Assignment)
+        self.assertIsInstance(macro.body[3], Assignment)
 
-
+        with self.assertRaises(BetaAssemblySyntaxError, msg="Block macro's first brace must be inline with the macro."):
+            self._parse(""".macro ADD(a,b,c) 
+{ a+b+c }
+""")
