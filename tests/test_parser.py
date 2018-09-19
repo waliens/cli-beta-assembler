@@ -5,14 +5,16 @@ from antlr4 import InputStream
 from assembler.BetaAssemblyLexer import BetaAssemblyLexer, CommonTokenStream
 from assembler.BetaAssemblyParser import BetaAssemblyParser
 from assembler.exceptions import BetaAssemblySyntaxError
-from assembler.nodes import Number, Macro, NegateOp, PlusOp, MultOp, Assignment
+from assembler.nodes import Number, Macro, NegateOp, PlusOp, MultOp, Assignment, MacroInvocation, Identifier
 from assembler.tester import BetaAssemblyErrorListener
+from assembler.util import SymbolNameTable, BetaAssemblyLexerWithSymbolNameTable, BetaAssemblyParserWithSymbolNameTable
 
 
 def parse_string(content):
-    lexer = BetaAssemblyLexer(InputStream(content))
+    symbol_table = SymbolNameTable()
+    lexer = BetaAssemblyLexerWithSymbolNameTable(symbol_table, input=InputStream(content))
     token_stream = CommonTokenStream(lexer)
-    parser = BetaAssemblyParser(token_stream)
+    parser = BetaAssemblyParserWithSymbolNameTable(symbol_table, input=token_stream)
     parser._listeners = [BetaAssemblyErrorListener()]
     return parser.start().beta_tree
 
@@ -149,3 +151,25 @@ a = 2 b = 3
         self.assertEqual("a", macro.arguments[0].name)
         self.assertEqual(3, len(macro.body))
 
+    def testMacroCall(self):
+        tree = self._parse(""".macro A(b) 0x0
+A(1)""")
+        self.assertEqual(2, len(tree.children))
+        self.assertIsInstance(tree.children[0], Macro)
+        self.assertIsInstance(tree.children[1], MacroInvocation)
+
+    def testMacroCallExpressionAmbiguity(self):
+        tree = self._parse("""
+b+1+a (1)
+.macro A(b) 0x0
+a+1 A (1)
+a (1)
+""")
+        self.assertEqual(7, len(tree.children))
+        self.assertIsInstance(tree.children[0], PlusOp)
+        self.assertIsInstance(tree.children[1], Number)
+        self.assertIsInstance(tree.children[2], Macro)
+        self.assertIsInstance(tree.children[3], PlusOp)
+        self.assertIsInstance(tree.children[4], MacroInvocation)
+        self.assertIsInstance(tree.children[5], Identifier)
+        self.assertIsInstance(tree.children[6], Number)

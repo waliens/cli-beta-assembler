@@ -44,8 +44,8 @@ class BetaAssemblyAmbiguityError(BetaAssemblyError):
         self._exact = exact
         self._ambigAlts = ambigAlts
         self._configs = configs
-        super(BetaAssemblyAmbiguityError, self).__init__("SyntaxError: ambiguity in BetaAssembly at {}:{}".format(
-            self._start, self._stop
+        super(BetaAssemblyAmbiguityError, self).__init__("SyntaxError: ambiguity in BetaAssembly at {}:{} (exact: {}, alts:{})".format(
+            self._start, self._stop, self._exact, self._ambigAlts
         ))
 
 

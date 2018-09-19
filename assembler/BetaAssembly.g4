@@ -6,11 +6,10 @@ options { language=Python3; }
 
 @header {
 from .nodes import BetaTree, Node, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
+}
 
-def extend_if_exists(l, child, access_fn):
-    if child.ctx is not None:
-        l.extend(access_fn(child))
-    return l
+@lexer::symbol {
+
 }
 
 // Parser rules
@@ -51,19 +50,24 @@ if $unary.ctx is not None:
 
 non_expression returns[Node node]
     : multiline_macro              {$node = $multiline_macro.macro }
-//      | macro_call             {$node = $macro_call.call }
+      | macro_call                 {$node = $macro_call.call }
       | inline_macro (NEWLINE|EOF) {$node = $inline_macro.macro }
-//      | inline_macro EOF     {$node = $inline_macro.macro }
 ;
 
 // Identifier definition (regular identifiers + labels)
 assignment returns[Assignment assign]
-    : IDENTIFIER EQUAL expression {$assign = Assignment($IDENTIFIER.text, $expression.node) }
-      | IDENTIFIER EQUAL unary    {$assign = Assignment($IDENTIFIER.text, $unary.node) }
+    : IDENTIFIER EQUAL expression {
+$assign = Assignment($IDENTIFIER.text, $expression.node)
+self.symbol_table.add_variable($IDENTIFIER.text)
+}
+      | IDENTIFIER EQUAL unary    {
+$assign = Assignment($IDENTIFIER.text, $unary.node)
+self.symbol_table.add_variable($IDENTIFIER.text)
+}
       | IDENTIFIER ':'            {$assign = Assignment($IDENTIFIER.text, Dot()) }
 ;
 
-// Expression with parenthesis
+// Expression
 expression returns[Node node]
     : '(' expression ')'                              {$node = $expression.node }
       | atom                                          {$node = $atom.a }
@@ -94,7 +98,10 @@ unary returns[Node node]
 
 // Macro definition (e.g. `.macro ADD(Ra, Rb, Rc) `)
 multiline_macro returns[Macro macro]
-    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta_block NEWLINE* '}' {$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta_block.nodes) }
+    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta_block NEWLINE* '}' {
+$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta_block.nodes)
+self.symbol_table.add_macro($IDENTIFIER.text)
+}
 ;
 
 macro_params returns[list params]
@@ -113,7 +120,7 @@ if $unary.ctx is not None:
     nodes.append($unary.node)
 nodes.extend($beta_items_inline.nodes)
 $macro = Macro($IDENTIFIER.text, $macro_params.params, nodes)
-
+self.symbol_table.add_macro($IDENTIFIER.text)
 }
 ;
 
@@ -128,33 +135,38 @@ if $beta_items_inline.ctx is not None:
 
 reduced_beta returns[Node node]
     : expression   {$node = $expression.node }
-//      | macro_call {}
+      | macro_call {$node = $macro_call.call }
 ;
 
+// Macro calls (e.g. ADD(R1, r3, R4), LD(R1, 0x4, R6),...)
+macro_call returns[MacroInvocation call]
+    : MACRO_ID '(' macro_call_params ')' {$call = MacroInvocation($MACRO_ID.text, $macro_call_params.params) }
+;
 
-//// Macro calls (e.g. ADD(R1, r3, R4), LD(R1, 0x4, R6),...)
-//macro_call returns[MacroInvocation call]
-//    : IDENTIFIER '(' macro_call_params ')' {$call = MacroInvocation($IDENTIFIER.text, $macro_call_params.params) }
-//;
-//
-//macro_call_params returns[list params]
-//    : expression (',' macro_call_params) ? {
-//$params = [$expression.node]
-//if $macro_call_params.ctx is not None:
-//    $params.extend($macro_call_params.params)
-//}
-//;
+macro_call_params returns[list params]
+    : expression (',' macro_call_params) ? {
+$params = [$expression.node]
+if $macro_call_params.ctx is not None:
+    $params.extend($macro_call_params.params)
+}
+;
 
 // Lexer rules
 COMMENT   : '|' ~[\r\n]* -> skip;
-IDENTIFIER: [a-zA-Z][a-zA-Z0-9_]* ;
+IDENTIFIER: [a-zA-Z][a-zA-Z0-9_]* {
+val = self.text
+if self.symbol_table.has_macro(val):
+    self.type = self.MACRO_ID
+else:
+    self.type = self.IDENTIFIER
+};
 NB_DECIMAL: [0-9]+('.'[0-9]+|'e''-'?[0-9]+)? ;
 NB_BINARY : '0b'[01]+ ;
 NB_HEXA   : '0x'[0-9A-Fa-f]+ ;
 MACRO     : '.macro' ;
 INCLUDE   : '.include' ;
 DOT       : '.' ;
-WSPACE    : [ \t\f]+ -> channel(HIDDEN) ;
+WSPACE    : [ \t\f]+ -> skip ;
 NEWLINE   : '\r'? '\n' ;
 EXP       : '^' ;
 DIV       : '/' ;
@@ -166,3 +178,8 @@ SHR       : '>>' ;
 SHL       : '<<' ;
 MOD       : '%' ;
 COMPL     : '~' ;
+
+
+
+MACRO_ID  : '_/xx';
+VAR_ID    : '_/xy';
