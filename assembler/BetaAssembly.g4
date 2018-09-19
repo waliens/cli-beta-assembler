@@ -43,6 +43,11 @@ beta returns[list nodes]
     : expression                {$nodes = [$expression.node] }
       | assignment              {$nodes = [$assignment.assign] }
       | non_expression          {$nodes = [$non_expression.node] }
+      | non_expression (unary)? {
+$nodes = [$non_expression.node]
+if $unary.ctx is not None:
+    $nodes.append($unary.node)
+}
 ;
 
 non_expression returns[Node node]

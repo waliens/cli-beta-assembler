@@ -16,92 +16,95 @@ def extend_if_exists(l, child, access_fn):
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\34")
-        buf.write("\u00d8\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\u00de\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\3\2\7\2\32")
         buf.write("\n\2\f\2\16\2\35\13\2\3\2\3\2\7\2!\n\2\f\2\16\2$\13\2")
         buf.write("\3\2\3\2\3\2\3\2\7\2*\n\2\f\2\16\2-\13\2\3\2\3\2\5\2\61")
         buf.write("\n\2\3\3\3\3\7\3\65\n\3\f\3\16\38\13\3\3\3\5\3;\n\3\3")
         buf.write("\3\3\3\3\3\3\3\3\3\5\3B\n\3\3\4\3\4\7\4F\n\4\f\4\16\4")
         buf.write("I\13\4\3\4\5\4L\n\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3")
-        buf.write("\5\3\5\3\5\5\5Y\n\5\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3")
-        buf.write("\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7k\n\7\3\b\3\b\3\b\3")
-        buf.write("\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\b{\n\b\3")
-        buf.write("\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b")
+        buf.write("\5\3\5\3\5\3\5\3\5\5\5[\n\5\3\5\3\5\5\5_\n\5\3\6\3\6\3")
+        buf.write("\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7")
+        buf.write("\5\7q\n\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b")
+        buf.write("\3\b\3\b\3\b\5\b\u0081\n\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b")
         buf.write("\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3")
-        buf.write("\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\7\b\u00a0\n\b\f\b\16\b")
-        buf.write("\u00a3\13\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\5")
-        buf.write("\t\u00af\n\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\5\n\u00b9")
-        buf.write("\n\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\7\13\u00c2\n\13")
-        buf.write("\f\13\16\13\u00c5\13\13\3\13\3\13\7\13\u00c9\n\13\f\13")
-        buf.write("\16\13\u00cc\13\13\3\13\3\13\3\13\3\f\3\f\3\f\5\f\u00d4")
-        buf.write("\n\f\3\f\3\f\3\f\2\3\16\r\2\4\6\b\n\f\16\20\22\24\26\2")
-        buf.write("\2\2\u00ea\2\60\3\2\2\2\4A\3\2\2\2\6C\3\2\2\2\bX\3\2\2")
-        buf.write("\2\nZ\3\2\2\2\fj\3\2\2\2\16z\3\2\2\2\20\u00ae\3\2\2\2")
-        buf.write("\22\u00b8\3\2\2\2\24\u00ba\3\2\2\2\26\u00d0\3\2\2\2\30")
-        buf.write("\32\7\22\2\2\31\30\3\2\2\2\32\35\3\2\2\2\33\31\3\2\2\2")
-        buf.write("\33\34\3\2\2\2\34\36\3\2\2\2\35\33\3\2\2\2\36\"\5\4\3")
-        buf.write("\2\37!\7\22\2\2 \37\3\2\2\2!$\3\2\2\2\" \3\2\2\2\"#\3")
-        buf.write("\2\2\2#%\3\2\2\2$\"\3\2\2\2%&\7\2\2\3&\'\b\2\1\2\'\61")
-        buf.write("\3\2\2\2(*\7\22\2\2)(\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3")
-        buf.write("\2\2\2,.\3\2\2\2-+\3\2\2\2./\7\2\2\3/\61\b\2\1\2\60\33")
-        buf.write("\3\2\2\2\60+\3\2\2\2\61\3\3\2\2\2\62:\5\22\n\2\63\65\7")
-        buf.write("\22\2\2\64\63\3\2\2\2\658\3\2\2\2\66\64\3\2\2\2\66\67")
-        buf.write("\3\2\2\2\679\3\2\2\28\66\3\2\2\29;\5\6\4\2:\66\3\2\2\2")
-        buf.write(":;\3\2\2\2;<\3\2\2\2<=\b\3\1\2=B\3\2\2\2>?\5\6\4\2?@\b")
-        buf.write("\3\1\2@B\3\2\2\2A\62\3\2\2\2A>\3\2\2\2B\5\3\2\2\2CK\5")
-        buf.write("\b\5\2DF\7\22\2\2ED\3\2\2\2FI\3\2\2\2GE\3\2\2\2GH\3\2")
-        buf.write("\2\2HJ\3\2\2\2IG\3\2\2\2JL\5\6\4\2KG\3\2\2\2KL\3\2\2\2")
-        buf.write("LM\3\2\2\2MN\b\4\1\2N\7\3\2\2\2OP\5\16\b\2PQ\b\5\1\2Q")
-        buf.write("Y\3\2\2\2RS\5\f\7\2ST\b\5\1\2TY\3\2\2\2UV\5\n\6\2VW\b")
-        buf.write("\5\1\2WY\3\2\2\2XO\3\2\2\2XR\3\2\2\2XU\3\2\2\2Y\t\3\2")
-        buf.write("\2\2Z[\5\24\13\2[\\\b\6\1\2\\\13\3\2\2\2]^\7\n\2\2^_\7")
-        buf.write("\30\2\2_`\5\16\b\2`a\b\7\1\2ak\3\2\2\2bc\7\n\2\2cd\7\30")
-        buf.write("\2\2de\5\22\n\2ef\b\7\1\2fk\3\2\2\2gh\7\n\2\2hi\7\3\2")
-        buf.write("\2ik\b\7\1\2j]\3\2\2\2jb\3\2\2\2jg\3\2\2\2k\r\3\2\2\2")
-        buf.write("lm\b\b\1\2mn\7\4\2\2no\5\16\b\2op\7\5\2\2pq\b\b\1\2q{")
-        buf.write("\3\2\2\2rs\5\20\t\2st\b\b\1\2t{\3\2\2\2uv\7\4\2\2vw\5")
-        buf.write("\22\n\2wx\7\5\2\2xy\b\b\1\2y{\3\2\2\2zl\3\2\2\2zr\3\2")
-        buf.write("\2\2zu\3\2\2\2{\u00a1\3\2\2\2|}\f\n\2\2}~\7\33\2\2~\177")
-        buf.write("\5\16\b\n\177\u0080\b\b\1\2\u0080\u00a0\3\2\2\2\u0081")
-        buf.write("\u0082\f\t\2\2\u0082\u0083\7\25\2\2\u0083\u0084\5\16\b")
-        buf.write("\n\u0084\u0085\b\b\1\2\u0085\u00a0\3\2\2\2\u0086\u0087")
-        buf.write("\f\b\2\2\u0087\u0088\7\24\2\2\u0088\u0089\5\16\b\t\u0089")
-        buf.write("\u008a\b\b\1\2\u008a\u00a0\3\2\2\2\u008b\u008c\f\7\2\2")
-        buf.write("\u008c\u008d\7\26\2\2\u008d\u008e\5\16\b\b\u008e\u008f")
-        buf.write("\b\b\1\2\u008f\u00a0\3\2\2\2\u0090\u0091\f\6\2\2\u0091")
-        buf.write("\u0092\7\27\2\2\u0092\u0093\5\16\b\7\u0093\u0094\b\b\1")
-        buf.write("\2\u0094\u00a0\3\2\2\2\u0095\u0096\f\5\2\2\u0096\u0097")
-        buf.write("\7\32\2\2\u0097\u0098\5\16\b\6\u0098\u0099\b\b\1\2\u0099")
-        buf.write("\u00a0\3\2\2\2\u009a\u009b\f\4\2\2\u009b\u009c\7\31\2")
-        buf.write("\2\u009c\u009d\5\16\b\5\u009d\u009e\b\b\1\2\u009e\u00a0")
-        buf.write("\3\2\2\2\u009f|\3\2\2\2\u009f\u0081\3\2\2\2\u009f\u0086")
-        buf.write("\3\2\2\2\u009f\u008b\3\2\2\2\u009f\u0090\3\2\2\2\u009f")
-        buf.write("\u0095\3\2\2\2\u009f\u009a\3\2\2\2\u00a0\u00a3\3\2\2\2")
-        buf.write("\u00a1\u009f\3\2\2\2\u00a1\u00a2\3\2\2\2\u00a2\17\3\2")
-        buf.write("\2\2\u00a3\u00a1\3\2\2\2\u00a4\u00a5\7\f\2\2\u00a5\u00af")
-        buf.write("\b\t\1\2\u00a6\u00a7\7\r\2\2\u00a7\u00af\b\t\1\2\u00a8")
-        buf.write("\u00a9\7\13\2\2\u00a9\u00af\b\t\1\2\u00aa\u00ab\7\20\2")
-        buf.write("\2\u00ab\u00af\b\t\1\2\u00ac\u00ad\7\n\2\2\u00ad\u00af")
-        buf.write("\b\t\1\2\u00ae\u00a4\3\2\2\2\u00ae\u00a6\3\2\2\2\u00ae")
-        buf.write("\u00a8\3\2\2\2\u00ae\u00aa\3\2\2\2\u00ae\u00ac\3\2\2\2")
-        buf.write("\u00af\21\3\2\2\2\u00b0\u00b1\7\27\2\2\u00b1\u00b2\5\16")
-        buf.write("\b\2\u00b2\u00b3\b\n\1\2\u00b3\u00b9\3\2\2\2\u00b4\u00b5")
-        buf.write("\7\34\2\2\u00b5\u00b6\5\16\b\2\u00b6\u00b7\b\n\1\2\u00b7")
-        buf.write("\u00b9\3\2\2\2\u00b8\u00b0\3\2\2\2\u00b8\u00b4\3\2\2\2")
-        buf.write("\u00b9\23\3\2\2\2\u00ba\u00bb\7\16\2\2\u00bb\u00bc\7\n")
-        buf.write("\2\2\u00bc\u00bd\7\4\2\2\u00bd\u00be\5\26\f\2\u00be\u00bf")
-        buf.write("\7\5\2\2\u00bf\u00c3\7\6\2\2\u00c0\u00c2\7\22\2\2\u00c1")
-        buf.write("\u00c0\3\2\2\2\u00c2\u00c5\3\2\2\2\u00c3\u00c1\3\2\2\2")
-        buf.write("\u00c3\u00c4\3\2\2\2\u00c4\u00c6\3\2\2\2\u00c5\u00c3\3")
-        buf.write("\2\2\2\u00c6\u00ca\5\b\5\2\u00c7\u00c9\7\22\2\2\u00c8")
-        buf.write("\u00c7\3\2\2\2\u00c9\u00cc\3\2\2\2\u00ca\u00c8\3\2\2\2")
-        buf.write("\u00ca\u00cb\3\2\2\2\u00cb\u00cd\3\2\2\2\u00cc\u00ca\3")
-        buf.write("\2\2\2\u00cd\u00ce\7\7\2\2\u00ce\u00cf\b\13\1\2\u00cf")
-        buf.write("\25\3\2\2\2\u00d0\u00d3\7\n\2\2\u00d1\u00d2\7\b\2\2\u00d2")
-        buf.write("\u00d4\5\26\f\2\u00d3\u00d1\3\2\2\2\u00d3\u00d4\3\2\2")
-        buf.write("\2\u00d4\u00d5\3\2\2\2\u00d5\u00d6\b\f\1\2\u00d6\27\3")
-        buf.write("\2\2\2\25\33\"+\60\66:AGKXjz\u009f\u00a1\u00ae\u00b8\u00c3")
-        buf.write("\u00ca\u00d3")
+        buf.write("\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b")
+        buf.write("\3\b\7\b\u00a6\n\b\f\b\16\b\u00a9\13\b\3\t\3\t\3\t\3\t")
+        buf.write("\3\t\3\t\3\t\3\t\3\t\3\t\5\t\u00b5\n\t\3\n\3\n\3\n\3\n")
+        buf.write("\3\n\3\n\3\n\3\n\5\n\u00bf\n\n\3\13\3\13\3\13\3\13\3\13")
+        buf.write("\3\13\3\13\7\13\u00c8\n\13\f\13\16\13\u00cb\13\13\3\13")
+        buf.write("\3\13\7\13\u00cf\n\13\f\13\16\13\u00d2\13\13\3\13\3\13")
+        buf.write("\3\13\3\f\3\f\3\f\5\f\u00da\n\f\3\f\3\f\3\f\2\3\16\r\2")
+        buf.write("\4\6\b\n\f\16\20\22\24\26\2\2\2\u00f2\2\60\3\2\2\2\4A")
+        buf.write("\3\2\2\2\6C\3\2\2\2\b^\3\2\2\2\n`\3\2\2\2\fp\3\2\2\2\16")
+        buf.write("\u0080\3\2\2\2\20\u00b4\3\2\2\2\22\u00be\3\2\2\2\24\u00c0")
+        buf.write("\3\2\2\2\26\u00d6\3\2\2\2\30\32\7\22\2\2\31\30\3\2\2\2")
+        buf.write("\32\35\3\2\2\2\33\31\3\2\2\2\33\34\3\2\2\2\34\36\3\2\2")
+        buf.write("\2\35\33\3\2\2\2\36\"\5\4\3\2\37!\7\22\2\2 \37\3\2\2\2")
+        buf.write("!$\3\2\2\2\" \3\2\2\2\"#\3\2\2\2#%\3\2\2\2$\"\3\2\2\2")
+        buf.write("%&\7\2\2\3&\'\b\2\1\2\'\61\3\2\2\2(*\7\22\2\2)(\3\2\2")
+        buf.write("\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3\2\2\2-+\3\2\2\2.")
+        buf.write("/\7\2\2\3/\61\b\2\1\2\60\33\3\2\2\2\60+\3\2\2\2\61\3\3")
+        buf.write("\2\2\2\62:\5\22\n\2\63\65\7\22\2\2\64\63\3\2\2\2\658\3")
+        buf.write("\2\2\2\66\64\3\2\2\2\66\67\3\2\2\2\679\3\2\2\28\66\3\2")
+        buf.write("\2\29;\5\6\4\2:\66\3\2\2\2:;\3\2\2\2;<\3\2\2\2<=\b\3\1")
+        buf.write("\2=B\3\2\2\2>?\5\6\4\2?@\b\3\1\2@B\3\2\2\2A\62\3\2\2\2")
+        buf.write("A>\3\2\2\2B\5\3\2\2\2CK\5\b\5\2DF\7\22\2\2ED\3\2\2\2F")
+        buf.write("I\3\2\2\2GE\3\2\2\2GH\3\2\2\2HJ\3\2\2\2IG\3\2\2\2JL\5")
+        buf.write("\6\4\2KG\3\2\2\2KL\3\2\2\2LM\3\2\2\2MN\b\4\1\2N\7\3\2")
+        buf.write("\2\2OP\5\16\b\2PQ\b\5\1\2Q_\3\2\2\2RS\5\f\7\2ST\b\5\1")
+        buf.write("\2T_\3\2\2\2UV\5\n\6\2VW\b\5\1\2W_\3\2\2\2XZ\5\n\6\2Y")
+        buf.write("[\5\22\n\2ZY\3\2\2\2Z[\3\2\2\2[\\\3\2\2\2\\]\b\5\1\2]")
+        buf.write("_\3\2\2\2^O\3\2\2\2^R\3\2\2\2^U\3\2\2\2^X\3\2\2\2_\t\3")
+        buf.write("\2\2\2`a\5\24\13\2ab\b\6\1\2b\13\3\2\2\2cd\7\n\2\2de\7")
+        buf.write("\30\2\2ef\5\16\b\2fg\b\7\1\2gq\3\2\2\2hi\7\n\2\2ij\7\30")
+        buf.write("\2\2jk\5\22\n\2kl\b\7\1\2lq\3\2\2\2mn\7\n\2\2no\7\3\2")
+        buf.write("\2oq\b\7\1\2pc\3\2\2\2ph\3\2\2\2pm\3\2\2\2q\r\3\2\2\2")
+        buf.write("rs\b\b\1\2st\7\4\2\2tu\5\16\b\2uv\7\5\2\2vw\b\b\1\2w\u0081")
+        buf.write("\3\2\2\2xy\5\20\t\2yz\b\b\1\2z\u0081\3\2\2\2{|\7\4\2\2")
+        buf.write("|}\5\22\n\2}~\7\5\2\2~\177\b\b\1\2\177\u0081\3\2\2\2\u0080")
+        buf.write("r\3\2\2\2\u0080x\3\2\2\2\u0080{\3\2\2\2\u0081\u00a7\3")
+        buf.write("\2\2\2\u0082\u0083\f\n\2\2\u0083\u0084\7\33\2\2\u0084")
+        buf.write("\u0085\5\16\b\n\u0085\u0086\b\b\1\2\u0086\u00a6\3\2\2")
+        buf.write("\2\u0087\u0088\f\t\2\2\u0088\u0089\7\25\2\2\u0089\u008a")
+        buf.write("\5\16\b\n\u008a\u008b\b\b\1\2\u008b\u00a6\3\2\2\2\u008c")
+        buf.write("\u008d\f\b\2\2\u008d\u008e\7\24\2\2\u008e\u008f\5\16\b")
+        buf.write("\t\u008f\u0090\b\b\1\2\u0090\u00a6\3\2\2\2\u0091\u0092")
+        buf.write("\f\7\2\2\u0092\u0093\7\26\2\2\u0093\u0094\5\16\b\b\u0094")
+        buf.write("\u0095\b\b\1\2\u0095\u00a6\3\2\2\2\u0096\u0097\f\6\2\2")
+        buf.write("\u0097\u0098\7\27\2\2\u0098\u0099\5\16\b\7\u0099\u009a")
+        buf.write("\b\b\1\2\u009a\u00a6\3\2\2\2\u009b\u009c\f\5\2\2\u009c")
+        buf.write("\u009d\7\32\2\2\u009d\u009e\5\16\b\6\u009e\u009f\b\b\1")
+        buf.write("\2\u009f\u00a6\3\2\2\2\u00a0\u00a1\f\4\2\2\u00a1\u00a2")
+        buf.write("\7\31\2\2\u00a2\u00a3\5\16\b\5\u00a3\u00a4\b\b\1\2\u00a4")
+        buf.write("\u00a6\3\2\2\2\u00a5\u0082\3\2\2\2\u00a5\u0087\3\2\2\2")
+        buf.write("\u00a5\u008c\3\2\2\2\u00a5\u0091\3\2\2\2\u00a5\u0096\3")
+        buf.write("\2\2\2\u00a5\u009b\3\2\2\2\u00a5\u00a0\3\2\2\2\u00a6\u00a9")
+        buf.write("\3\2\2\2\u00a7\u00a5\3\2\2\2\u00a7\u00a8\3\2\2\2\u00a8")
+        buf.write("\17\3\2\2\2\u00a9\u00a7\3\2\2\2\u00aa\u00ab\7\f\2\2\u00ab")
+        buf.write("\u00b5\b\t\1\2\u00ac\u00ad\7\r\2\2\u00ad\u00b5\b\t\1\2")
+        buf.write("\u00ae\u00af\7\13\2\2\u00af\u00b5\b\t\1\2\u00b0\u00b1")
+        buf.write("\7\20\2\2\u00b1\u00b5\b\t\1\2\u00b2\u00b3\7\n\2\2\u00b3")
+        buf.write("\u00b5\b\t\1\2\u00b4\u00aa\3\2\2\2\u00b4\u00ac\3\2\2\2")
+        buf.write("\u00b4\u00ae\3\2\2\2\u00b4\u00b0\3\2\2\2\u00b4\u00b2\3")
+        buf.write("\2\2\2\u00b5\21\3\2\2\2\u00b6\u00b7\7\27\2\2\u00b7\u00b8")
+        buf.write("\5\16\b\2\u00b8\u00b9\b\n\1\2\u00b9\u00bf\3\2\2\2\u00ba")
+        buf.write("\u00bb\7\34\2\2\u00bb\u00bc\5\16\b\2\u00bc\u00bd\b\n\1")
+        buf.write("\2\u00bd\u00bf\3\2\2\2\u00be\u00b6\3\2\2\2\u00be\u00ba")
+        buf.write("\3\2\2\2\u00bf\23\3\2\2\2\u00c0\u00c1\7\16\2\2\u00c1\u00c2")
+        buf.write("\7\n\2\2\u00c2\u00c3\7\4\2\2\u00c3\u00c4\5\26\f\2\u00c4")
+        buf.write("\u00c5\7\5\2\2\u00c5\u00c9\7\6\2\2\u00c6\u00c8\7\22\2")
+        buf.write("\2\u00c7\u00c6\3\2\2\2\u00c8\u00cb\3\2\2\2\u00c9\u00c7")
+        buf.write("\3\2\2\2\u00c9\u00ca\3\2\2\2\u00ca\u00cc\3\2\2\2\u00cb")
+        buf.write("\u00c9\3\2\2\2\u00cc\u00d0\5\b\5\2\u00cd\u00cf\7\22\2")
+        buf.write("\2\u00ce\u00cd\3\2\2\2\u00cf\u00d2\3\2\2\2\u00d0\u00ce")
+        buf.write("\3\2\2\2\u00d0\u00d1\3\2\2\2\u00d1\u00d3\3\2\2\2\u00d2")
+        buf.write("\u00d0\3\2\2\2\u00d3\u00d4\7\7\2\2\u00d4\u00d5\b\13\1")
+        buf.write("\2\u00d5\25\3\2\2\2\u00d6\u00d9\7\n\2\2\u00d7\u00d8\7")
+        buf.write("\b\2\2\u00d8\u00da\5\26\f\2\u00d9\u00d7\3\2\2\2\u00d9")
+        buf.write("\u00da\3\2\2\2\u00da\u00db\3\2\2\2\u00db\u00dc\b\f\1\2")
+        buf.write("\u00dc\27\3\2\2\2\26\33\"+\60\66:AGKZ^p\u0080\u00a5\u00a7")
+        buf.write("\u00b4\u00be\u00c9\u00d0\u00d9")
         return buf.getvalue()
 
 
@@ -456,6 +459,7 @@ class BetaAssemblyParser ( Parser ):
             self._expression = None # ExpressionContext
             self._assignment = None # AssignmentContext
             self._non_expression = None # Non_expressionContext
+            self._unary = None # UnaryContext
 
         def expression(self):
             return self.getTypedRuleContext(BetaAssemblyParser.ExpressionContext,0)
@@ -467,6 +471,10 @@ class BetaAssemblyParser ( Parser ):
 
         def non_expression(self):
             return self.getTypedRuleContext(BetaAssemblyParser.Non_expressionContext,0)
+
+
+        def unary(self):
+            return self.getTypedRuleContext(BetaAssemblyParser.UnaryContext,0)
 
 
         def getRuleIndex(self):
@@ -487,10 +495,11 @@ class BetaAssemblyParser ( Parser ):
 
         localctx = BetaAssemblyParser.BetaContext(self, self._ctx, self.state)
         self.enterRule(localctx, 6, self.RULE_beta)
+        self._la = 0 # Token type
         try:
-            self.state = 86
+            self.state = 92
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,9,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,10,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 77
@@ -510,6 +519,25 @@ class BetaAssemblyParser ( Parser ):
                 self.state = 83
                 localctx._non_expression = self.non_expression()
                 localctx.nodes = [localctx._non_expression.node] 
+                pass
+
+            elif la_ == 4:
+                self.enterOuterAlt(localctx, 4)
+                self.state = 86
+                localctx._non_expression = self.non_expression()
+                self.state = 88
+                self._errHandler.sync(self)
+                _la = self._input.LA(1)
+                if _la==BetaAssemblyParser.MINUS or _la==BetaAssemblyParser.COMPL:
+                    self.state = 87
+                    localctx._unary = self.unary()
+
+
+
+                localctx.nodes = [localctx._non_expression.node]
+                if localctx._unary is not None:
+                    localctx.nodes.append(localctx._unary.node)
+
                 pass
 
 
@@ -553,7 +581,7 @@ class BetaAssemblyParser ( Parser ):
         self.enterRule(localctx, 8, self.RULE_non_expression)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 88
+            self.state = 94
             localctx._macro_def_body = self.macro_def_body()
             localctx.node = localctx._macro_def_body.macro 
         except RecognitionException as re:
@@ -607,36 +635,36 @@ class BetaAssemblyParser ( Parser ):
         localctx = BetaAssemblyParser.AssignmentContext(self, self._ctx, self.state)
         self.enterRule(localctx, 10, self.RULE_assignment)
         try:
-            self.state = 104
+            self.state = 110
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,10,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,11,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 91
+                self.state = 97
                 localctx._IDENTIFIER = self.match(BetaAssemblyParser.IDENTIFIER)
-                self.state = 92
+                self.state = 98
                 self.match(BetaAssemblyParser.EQUAL)
-                self.state = 93
+                self.state = 99
                 localctx._expression = self.expression(0)
                 localctx.assign = Assignment((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text), localctx._expression.node) 
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 96
+                self.state = 102
                 localctx._IDENTIFIER = self.match(BetaAssemblyParser.IDENTIFIER)
-                self.state = 97
+                self.state = 103
                 self.match(BetaAssemblyParser.EQUAL)
-                self.state = 98
+                self.state = 104
                 localctx._unary = self.unary()
                 localctx.assign = Assignment((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text), localctx._unary.node) 
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 101
+                self.state = 107
                 localctx._IDENTIFIER = self.match(BetaAssemblyParser.IDENTIFIER)
-                self.state = 102
+                self.state = 108
                 self.match(BetaAssemblyParser.T__0)
                 localctx.assign = Assignment((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text), Dot()) 
                 pass
@@ -720,59 +748,59 @@ class BetaAssemblyParser ( Parser ):
         self.enterRecursionRule(localctx, 12, self.RULE_expression, _p)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 120
+            self.state = 126
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,11,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,12,self._ctx)
             if la_ == 1:
-                self.state = 107
+                self.state = 113
                 self.match(BetaAssemblyParser.T__1)
-                self.state = 108
+                self.state = 114
                 localctx._expression = self.expression(0)
-                self.state = 109
+                self.state = 115
                 self.match(BetaAssemblyParser.T__2)
                 localctx.node = localctx._expression.node 
                 pass
 
             elif la_ == 2:
-                self.state = 112
+                self.state = 118
                 localctx._atom = self.atom()
                 localctx.node = localctx._atom.a 
                 pass
 
             elif la_ == 3:
-                self.state = 115
+                self.state = 121
                 self.match(BetaAssemblyParser.T__1)
-                self.state = 116
+                self.state = 122
                 localctx._unary = self.unary()
-                self.state = 117
+                self.state = 123
                 self.match(BetaAssemblyParser.T__2)
                 localctx.node = localctx._unary.node 
                 pass
 
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 159
+            self.state = 165
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,13,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,14,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
                     if self._parseListeners is not None:
                         self.triggerExitRuleEvent()
                     _prevctx = localctx
-                    self.state = 157
+                    self.state = 163
                     self._errHandler.sync(self)
-                    la_ = self._interp.adaptivePredict(self._input,12,self._ctx)
+                    la_ = self._interp.adaptivePredict(self._input,13,self._ctx)
                     if la_ == 1:
                         localctx = BetaAssemblyParser.ExpressionContext(self, _parentctx, _parentState)
                         localctx.a = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 122
+                        self.state = 128
                         if not self.precpred(self._ctx, 8):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 8)")
-                        self.state = 123
+                        self.state = 129
                         self.match(BetaAssemblyParser.MOD)
-                        self.state = 124
+                        self.state = 130
                         localctx.b = localctx._expression = self.expression(8)
                         localctx.node = ModuloOp(localctx.a.node, localctx.b.node) 
                         pass
@@ -781,13 +809,13 @@ class BetaAssemblyParser ( Parser ):
                         localctx = BetaAssemblyParser.ExpressionContext(self, _parentctx, _parentState)
                         localctx.a = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 127
+                        self.state = 133
                         if not self.precpred(self._ctx, 7):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 7)")
-                        self.state = 128
+                        self.state = 134
                         self.match(BetaAssemblyParser.MULT)
-                        self.state = 129
+                        self.state = 135
                         localctx.b = localctx._expression = self.expression(8)
                         localctx.node = MultOp(localctx.a.node, localctx.b.node) 
                         pass
@@ -796,13 +824,13 @@ class BetaAssemblyParser ( Parser ):
                         localctx = BetaAssemblyParser.ExpressionContext(self, _parentctx, _parentState)
                         localctx.a = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 132
+                        self.state = 138
                         if not self.precpred(self._ctx, 6):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 6)")
-                        self.state = 133
+                        self.state = 139
                         self.match(BetaAssemblyParser.DIV)
-                        self.state = 134
+                        self.state = 140
                         localctx.b = localctx._expression = self.expression(7)
                         localctx.node = DivOp(localctx.a.node, localctx.b.node) 
                         pass
@@ -811,13 +839,13 @@ class BetaAssemblyParser ( Parser ):
                         localctx = BetaAssemblyParser.ExpressionContext(self, _parentctx, _parentState)
                         localctx.a = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 137
+                        self.state = 143
                         if not self.precpred(self._ctx, 5):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 5)")
-                        self.state = 138
+                        self.state = 144
                         self.match(BetaAssemblyParser.PLUS)
-                        self.state = 139
+                        self.state = 145
                         localctx.b = localctx._expression = self.expression(6)
                         localctx.node = PlusOp(localctx.a.node, localctx.b.node) 
                         pass
@@ -826,13 +854,13 @@ class BetaAssemblyParser ( Parser ):
                         localctx = BetaAssemblyParser.ExpressionContext(self, _parentctx, _parentState)
                         localctx.a = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 142
+                        self.state = 148
                         if not self.precpred(self._ctx, 4):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 4)")
-                        self.state = 143
+                        self.state = 149
                         self.match(BetaAssemblyParser.MINUS)
-                        self.state = 144
+                        self.state = 150
                         localctx.b = localctx._expression = self.expression(5)
                         localctx.node = MinusOp(localctx.a.node, localctx.b.node) 
                         pass
@@ -841,13 +869,13 @@ class BetaAssemblyParser ( Parser ):
                         localctx = BetaAssemblyParser.ExpressionContext(self, _parentctx, _parentState)
                         localctx.a = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 147
+                        self.state = 153
                         if not self.precpred(self._ctx, 3):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 3)")
-                        self.state = 148
+                        self.state = 154
                         self.match(BetaAssemblyParser.SHL)
-                        self.state = 149
+                        self.state = 155
                         localctx.b = localctx._expression = self.expression(4)
                         localctx.node = ShiftLeftOp(localctx.a.node, localctx.b.node) 
                         pass
@@ -856,21 +884,21 @@ class BetaAssemblyParser ( Parser ):
                         localctx = BetaAssemblyParser.ExpressionContext(self, _parentctx, _parentState)
                         localctx.a = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 152
+                        self.state = 158
                         if not self.precpred(self._ctx, 2):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 2)")
-                        self.state = 153
+                        self.state = 159
                         self.match(BetaAssemblyParser.SHR)
-                        self.state = 154
+                        self.state = 160
                         localctx.b = localctx._expression = self.expression(3)
                         localctx.node = ShiftRightOp(localctx.a.node, localctx.b.node) 
                         pass
 
              
-                self.state = 161
+                self.state = 167
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,13,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,14,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -925,36 +953,36 @@ class BetaAssemblyParser ( Parser ):
         localctx = BetaAssemblyParser.AtomContext(self, self._ctx, self.state)
         self.enterRule(localctx, 14, self.RULE_atom)
         try:
-            self.state = 172
+            self.state = 178
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [BetaAssemblyParser.NB_BINARY]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 162
+                self.state = 168
                 localctx._NB_BINARY = self.match(BetaAssemblyParser.NB_BINARY)
                 localctx.a = Number(binary=(None if localctx._NB_BINARY is None else localctx._NB_BINARY.text)) 
                 pass
             elif token in [BetaAssemblyParser.NB_HEXA]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 164
+                self.state = 170
                 localctx._NB_HEXA = self.match(BetaAssemblyParser.NB_HEXA)
                 localctx.a = Number(hexadecimal=(None if localctx._NB_HEXA is None else localctx._NB_HEXA.text)) 
                 pass
             elif token in [BetaAssemblyParser.NB_DECIMAL]:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 166
+                self.state = 172
                 localctx._NB_DECIMAL = self.match(BetaAssemblyParser.NB_DECIMAL)
                 localctx.a = Number(decimal=(None if localctx._NB_DECIMAL is None else localctx._NB_DECIMAL.text)) 
                 pass
             elif token in [BetaAssemblyParser.DOT]:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 168
+                self.state = 174
                 self.match(BetaAssemblyParser.DOT)
                 localctx.a = Dot() 
                 pass
             elif token in [BetaAssemblyParser.IDENTIFIER]:
                 self.enterOuterAlt(localctx, 5)
-                self.state = 170
+                self.state = 176
                 localctx._IDENTIFIER = self.match(BetaAssemblyParser.IDENTIFIER)
                 localctx.a = Identifier((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text)) 
                 pass
@@ -1006,22 +1034,22 @@ class BetaAssemblyParser ( Parser ):
         localctx = BetaAssemblyParser.UnaryContext(self, self._ctx, self.state)
         self.enterRule(localctx, 16, self.RULE_unary)
         try:
-            self.state = 182
+            self.state = 188
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [BetaAssemblyParser.MINUS]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 174
+                self.state = 180
                 self.match(BetaAssemblyParser.MINUS)
-                self.state = 175
+                self.state = 181
                 localctx._expression = self.expression(0)
                 localctx.node = NegateOp(localctx._expression.node) 
                 pass
             elif token in [BetaAssemblyParser.COMPL]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 178
+                self.state = 184
                 self.match(BetaAssemblyParser.COMPL)
-                self.state = 179
+                self.state = 185
                 localctx._expression = self.expression(0)
                 localctx.node = BitwiseComplementOp(localctx._expression.node) 
                 pass
@@ -1087,41 +1115,41 @@ class BetaAssemblyParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 184
+            self.state = 190
             self.match(BetaAssemblyParser.MACRO)
-            self.state = 185
+            self.state = 191
             localctx._IDENTIFIER = self.match(BetaAssemblyParser.IDENTIFIER)
-            self.state = 186
+            self.state = 192
             self.match(BetaAssemblyParser.T__1)
-            self.state = 187
-            localctx._macro_params = self.macro_params()
-            self.state = 188
-            self.match(BetaAssemblyParser.T__2)
-            self.state = 189
-            self.match(BetaAssemblyParser.T__3)
             self.state = 193
+            localctx._macro_params = self.macro_params()
+            self.state = 194
+            self.match(BetaAssemblyParser.T__2)
+            self.state = 195
+            self.match(BetaAssemblyParser.T__3)
+            self.state = 199
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==BetaAssemblyParser.NEWLINE:
-                self.state = 190
+                self.state = 196
                 self.match(BetaAssemblyParser.NEWLINE)
-                self.state = 195
+                self.state = 201
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 196
+            self.state = 202
             localctx._beta = self.beta()
-            self.state = 200
+            self.state = 206
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==BetaAssemblyParser.NEWLINE:
-                self.state = 197
+                self.state = 203
                 self.match(BetaAssemblyParser.NEWLINE)
-                self.state = 202
+                self.state = 208
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 203
+            self.state = 209
             self.match(BetaAssemblyParser.T__4)
             localctx.macro = Macro((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text), localctx._macro_params.params, localctx._beta.nodes) 
         except RecognitionException as re:
@@ -1169,15 +1197,15 @@ class BetaAssemblyParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 206
+            self.state = 212
             localctx._IDENTIFIER = self.match(BetaAssemblyParser.IDENTIFIER)
-            self.state = 209
+            self.state = 215
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==BetaAssemblyParser.T__5:
-                self.state = 207
+                self.state = 213
                 self.match(BetaAssemblyParser.T__5)
-                self.state = 208
+                self.state = 214
                 localctx._macro_params = self.macro_params()
 
 

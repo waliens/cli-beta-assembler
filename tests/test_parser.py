@@ -4,7 +4,7 @@ from antlr4 import InputStream
 
 from assembler.BetaAssemblyLexer import BetaAssemblyLexer, CommonTokenStream
 from assembler.BetaAssemblyParser import BetaAssemblyParser
-from assembler.nodes import Number, Macro
+from assembler.nodes import Number, Macro, NegateOp
 from assembler.tester import BetaAssemblyErrorListener
 
 
@@ -87,6 +87,12 @@ a-(1) (2+a) 2+(a-2)
         self.assertEqual(1, len(macro.body))
         self.assertIsInstance(macro.body[0], Number)
         self.assertEqual(macro.body[0].value, 0)
+
+    def testSimpleMacroAndUnary(self):
+        tree = self._parse(""".macro ADD(a,b,c) { 0x0 } -1""")
+        self.assertEqual(2, len(tree.children))
+        self.assertIsInstance(tree.children[0], Macro)
+        self.assertIsInstance(tree.children[1], NegateOp)
 
 
 
