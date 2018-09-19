@@ -96,7 +96,7 @@ a-(1) (2+a) 2+(a-2)
         self.assertIsInstance(tree.children[0], Macro)
         self.assertIsInstance(tree.children[1], NegateOp)
 
-    def testMacroBody(self):
+    def testMultilineMacro(self):
         tree = self._parse(""".macro ADD(a,b,c) {
 a+b+c a*b*c
 a = 2 b = 3 
@@ -117,3 +117,35 @@ a = 2 b = 3
             self._parse(""".macro ADD(a,b,c) 
 { a+b+c }
 """)
+
+    def testMacroInline(self):
+        tree = self._parse("""
+.macro ADD(a) 0x0 0x0 a+2
+.macro SUB(b) -2 3 45 3
+""")
+
+        self.assertEqual(2, len(tree.children))
+        macro1 = tree.children[0]
+        self.assertIsInstance(macro1, Macro)
+        self.assertEqual("ADD", macro1.name)
+        self.assertEqual(1, len(macro1.arguments))
+        self.assertEqual("a", macro1.arguments[0].name)
+        self.assertEqual(3, len(macro1.body))
+
+        macro2 = tree.children[1]
+        self.assertIsInstance(macro2, Macro)
+        self.assertEqual("SUB", macro2.name)
+        self.assertEqual(1, len(macro2.arguments))
+        self.assertEqual("b", macro2.arguments[0].name)
+        self.assertEqual(4, len(macro2.body))
+
+    def testMacroInlineWithEOF(self):
+        tree = self._parse(""".macro ADD(a) 0x0 0x0 a+2""")
+        self.assertEqual(1, len(tree.children))
+        macro = tree.children[0]
+        self.assertIsInstance(macro, Macro)
+        self.assertEqual("ADD", macro.name)
+        self.assertEqual(1, len(macro.arguments))
+        self.assertEqual("a", macro.arguments[0].name)
+        self.assertEqual(3, len(macro.body))
+

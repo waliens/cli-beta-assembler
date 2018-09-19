@@ -50,10 +50,10 @@ if $unary.ctx is not None:
 ;
 
 non_expression returns[Node node]
-    : macro_def_body          {$node = $macro_def_body.macro }
+    : multiline_macro              {$node = $multiline_macro.macro }
 //      | macro_call             {$node = $macro_call.call }
-//      | macro_def_line NEWLINE {$node = $macro_def_line.macro }
-//      | macro_def_line EOF     {$node = $macro_def_line.macro }
+      | inline_macro (NEWLINE|EOF) {$node = $inline_macro.macro }
+//      | inline_macro EOF     {$node = $inline_macro.macro }
 ;
 
 // Identifier definition (regular identifiers + labels)
@@ -92,12 +92,8 @@ unary returns[Node node]
       | COMPL expression {$node = BitwiseComplementOp($expression.node) }
 ;
 
-//// Macro definition (e.g. `.macro ADD(Ra, Rb, Rc) `)
-//macro_def_line returns[Macro macro]
-//    : MACRO IDENTIFIER '(' macro_params ')' macro_def {$macro = Macro($IDENTIFIER.text, $macro_params.params, $macro_def.definition) }
-//;
-//
-macro_def_body returns[Macro macro]
+// Macro definition (e.g. `.macro ADD(Ra, Rb, Rc) `)
+multiline_macro returns[Macro macro]
     : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta_block NEWLINE* '}' {$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta_block.nodes) }
 ;
 
@@ -109,18 +105,32 @@ if $macro_params.ctx is not None:
 }
 ;
 
-//macro_def returns[list definition]
-//    : expression (macro_def) ?   {
-//$definition = [$expression.node]
-//if $macro_def.ctx is not None:
-//    $definition.extend($macro_def.definition)
-//}
-//      | macro_call (macro_def) ? {
-//$definition = [$macro_call.call]
-//if $macro_def.ctx is not None:
-//    $definition.extend($macro_def.definition)
-//}
-//;
+// Inline macro
+inline_macro returns[Macro macro]
+    : MACRO IDENTIFIER '(' macro_params ')' unary? beta_items_inline {
+nodes = []
+if $unary.ctx is not None:
+    nodes.append($unary.node)
+nodes.extend($beta_items_inline.nodes)
+$macro = Macro($IDENTIFIER.text, $macro_params.params, nodes)
+
+}
+;
+
+// Sequence of beta language elements (reduced set) on the same line
+beta_items_inline returns[list nodes]
+    : reduced_beta beta_items_inline? {
+$nodes = [$reduced_beta.node]
+if $beta_items_inline.ctx is not None:
+    $nodes.extend($beta_items_inline.nodes)
+}
+;
+
+reduced_beta returns[Node node]
+    : expression   {$node = $expression.node }
+//      | macro_call {}
+;
+
 
 //// Macro calls (e.g. ADD(R1, r3, R4), LD(R1, 0x4, R6),...)
 //macro_call returns[MacroInvocation call]
