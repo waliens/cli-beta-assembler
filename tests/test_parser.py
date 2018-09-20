@@ -1,27 +1,14 @@
-from unittest import TestCase, skip
+from unittest import TestCase
 
-from antlr4 import InputStream
-
-from assembler.BetaAssemblyLexer import BetaAssemblyLexer, CommonTokenStream
-from assembler.BetaAssemblyParser import BetaAssemblyParser
 from assembler.exceptions import BetaAssemblySyntaxError
 from assembler.nodes import Number, Macro, NegateOp, PlusOp, MultOp, Assignment, MacroInvocation, Identifier
-from assembler.tester import BetaAssemblyErrorListener
-from assembler.util import SymbolNameTable, BetaAssemblyLexerWithSymbolNameTable, BetaAssemblyParserWithSymbolNameTable
-
-
-def parse_string(content):
-    symbol_table = SymbolNameTable()
-    lexer = BetaAssemblyLexerWithSymbolNameTable(symbol_table, input=InputStream(content))
-    token_stream = CommonTokenStream(lexer)
-    parser = BetaAssemblyParserWithSymbolNameTable(symbol_table, input=token_stream)
-    parser._listeners = [BetaAssemblyErrorListener()]
-    return parser.start().beta_tree
+from assembler.parse_util import parse_string
 
 
 class TestGrammar(TestCase):
     def _parse(self, content):
-        return parse_string(content)
+        tree, _ = parse_string(content)
+        return tree
 
     def testEmptyFile(self):
         self._parse("")

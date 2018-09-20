@@ -153,6 +153,7 @@ if $macro_call_params.ctx is not None:
 
 // Lexer rules
 COMMENT   : '|' ~[\r\n]* -> skip;
+INCLUDE   : '.include' ([^ \t\f]*'/')?[^ \t\f]+ ;
 IDENTIFIER: [a-zA-Z][a-zA-Z0-9_]* {
 val = self.text
 if self.symbol_table.has_macro(val):
@@ -164,7 +165,6 @@ NB_DECIMAL: [0-9]+('.'[0-9]+|'e''-'?[0-9]+)? ;
 NB_BINARY : '0b'[01]+ ;
 NB_HEXA   : '0x'[0-9A-Fa-f]+ ;
 MACRO     : '.macro' ;
-INCLUDE   : '.include' ;
 DOT       : '.' ;
 WSPACE    : [ \t\f]+ -> skip ;
 NEWLINE   : '\r'? '\n' ;

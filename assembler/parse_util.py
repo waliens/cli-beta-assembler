@@ -1,4 +1,6 @@
+from antlr4 import InputStream, CommonTokenStream
 
+from assembler.exceptions import BetaAssemblyErrorListener
 from .BetaAssemblyLexer import BetaAssemblyLexer
 from .BetaAssemblyParser import BetaAssemblyParser
 
@@ -39,3 +41,41 @@ class BetaAssemblyParserWithSymbolNameTable(BetaAssemblyParser):
     @property
     def symbol_table(self):
         return self._snt
+
+
+def parse_file(filepath: str):
+    with open(filepath, "r", encoding="utf-8") as stream:
+        return parse_stream(stream)
+
+
+def parse_string(data: str):
+    return parse_stream(InputStream(data))
+
+
+def parse_stream(stream):
+    """Parse a stream
+
+    Parameters
+    ----------
+    stream:
+        Stream to parse
+
+    Returns
+    -------
+    tree: BetaTree
+        Syntax tree of the parsed stream
+    symbol_table: SymbolNameTable
+        Symbol table resulting from the parsing. Contains names of all found macros and variables.
+
+    Raises
+    ------
+    BetaAssemblySyntaxError:
+        Raised if a syntax error is found in the stream.
+    """
+    name_table = SymbolNameTable()
+    lexer = BetaAssemblyLexerWithSymbolNameTable(name_table, input=stream)
+    token_stream = CommonTokenStream(lexer)
+    parser = BetaAssemblyParserWithSymbolNameTable(name_table, input=token_stream)
+    parser._listeners = [BetaAssemblyErrorListener()]
+    tree = parser.start().beta_tree
+    return tree, name_table

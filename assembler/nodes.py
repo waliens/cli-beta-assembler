@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from operator import add, sub, mul, truediv, neg, inv
+from operator import add, sub, mul, truediv, neg
 
 
 class Node(metaclass=ABCMeta):

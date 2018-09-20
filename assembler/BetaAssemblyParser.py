@@ -59,19 +59,19 @@ def serializedATN():
         buf.write("\2\2eY\3\2\2\2e\\\3\2\2\2e_\3\2\2\2f\t\3\2\2\2gh\5\24")
         buf.write("\13\2hi\b\6\1\2ir\3\2\2\2jk\5\36\20\2kl\b\6\1\2lr\3\2")
         buf.write("\2\2mn\5\30\r\2no\t\2\2\2op\b\6\1\2pr\3\2\2\2qg\3\2\2")
-        buf.write("\2qj\3\2\2\2qm\3\2\2\2r\13\3\2\2\2st\7\n\2\2tu\7\30\2")
-        buf.write("\2uv\5\16\b\2vw\b\7\1\2w\u0081\3\2\2\2xy\7\n\2\2yz\7\30")
-        buf.write("\2\2z{\5\22\n\2{|\b\7\1\2|\u0081\3\2\2\2}~\7\n\2\2~\177")
-        buf.write("\7\3\2\2\177\u0081\b\7\1\2\u0080s\3\2\2\2\u0080x\3\2\2")
-        buf.write("\2\u0080}\3\2\2\2\u0081\r\3\2\2\2\u0082\u0083\b\b\1\2")
-        buf.write("\u0083\u0084\7\4\2\2\u0084\u0085\5\16\b\2\u0085\u0086")
-        buf.write("\7\5\2\2\u0086\u0087\b\b\1\2\u0087\u0091\3\2\2\2\u0088")
-        buf.write("\u0089\5\20\t\2\u0089\u008a\b\b\1\2\u008a\u0091\3\2\2")
-        buf.write("\2\u008b\u008c\7\4\2\2\u008c\u008d\5\22\n\2\u008d\u008e")
-        buf.write("\7\5\2\2\u008e\u008f\b\b\1\2\u008f\u0091\3\2\2\2\u0090")
-        buf.write("\u0082\3\2\2\2\u0090\u0088\3\2\2\2\u0090\u008b\3\2\2\2")
-        buf.write("\u0091\u00b7\3\2\2\2\u0092\u0093\f\n\2\2\u0093\u0094\7")
-        buf.write("\33\2\2\u0094\u0095\5\16\b\n\u0095\u0096\b\b\1\2\u0096")
+        buf.write("\2qj\3\2\2\2qm\3\2\2\2r\13\3\2\2\2st\7\13\2\2tu\7\30\2")
+        buf.write("\2uv\5\16\b\2vw\b\7\1\2w\u0081\3\2\2\2xy\7\13\2\2yz\7")
+        buf.write("\30\2\2z{\5\22\n\2{|\b\7\1\2|\u0081\3\2\2\2}~\7\13\2\2")
+        buf.write("~\177\7\3\2\2\177\u0081\b\7\1\2\u0080s\3\2\2\2\u0080x")
+        buf.write("\3\2\2\2\u0080}\3\2\2\2\u0081\r\3\2\2\2\u0082\u0083\b")
+        buf.write("\b\1\2\u0083\u0084\7\4\2\2\u0084\u0085\5\16\b\2\u0085")
+        buf.write("\u0086\7\5\2\2\u0086\u0087\b\b\1\2\u0087\u0091\3\2\2\2")
+        buf.write("\u0088\u0089\5\20\t\2\u0089\u008a\b\b\1\2\u008a\u0091")
+        buf.write("\3\2\2\2\u008b\u008c\7\4\2\2\u008c\u008d\5\22\n\2\u008d")
+        buf.write("\u008e\7\5\2\2\u008e\u008f\b\b\1\2\u008f\u0091\3\2\2\2")
+        buf.write("\u0090\u0082\3\2\2\2\u0090\u0088\3\2\2\2\u0090\u008b\3")
+        buf.write("\2\2\2\u0091\u00b7\3\2\2\2\u0092\u0093\f\n\2\2\u0093\u0094")
+        buf.write("\7\33\2\2\u0094\u0095\5\16\b\n\u0095\u0096\b\b\1\2\u0096")
         buf.write("\u00b6\3\2\2\2\u0097\u0098\f\t\2\2\u0098\u0099\7\25\2")
         buf.write("\2\u0099\u009a\5\16\b\n\u009a\u009b\b\b\1\2\u009b\u00b6")
         buf.write("\3\2\2\2\u009c\u009d\f\b\2\2\u009d\u009e\7\24\2\2\u009e")
@@ -88,17 +88,17 @@ def serializedATN():
         buf.write("\u00b5\u00a6\3\2\2\2\u00b5\u00ab\3\2\2\2\u00b5\u00b0\3")
         buf.write("\2\2\2\u00b6\u00b9\3\2\2\2\u00b7\u00b5\3\2\2\2\u00b7\u00b8")
         buf.write("\3\2\2\2\u00b8\17\3\2\2\2\u00b9\u00b7\3\2\2\2\u00ba\u00bb")
-        buf.write("\7\f\2\2\u00bb\u00c5\b\t\1\2\u00bc\u00bd\7\r\2\2\u00bd")
-        buf.write("\u00c5\b\t\1\2\u00be\u00bf\7\13\2\2\u00bf\u00c5\b\t\1")
-        buf.write("\2\u00c0\u00c1\7\20\2\2\u00c1\u00c5\b\t\1\2\u00c2\u00c3")
-        buf.write("\7\n\2\2\u00c3\u00c5\b\t\1\2\u00c4\u00ba\3\2\2\2\u00c4")
+        buf.write("\7\r\2\2\u00bb\u00c5\b\t\1\2\u00bc\u00bd\7\16\2\2\u00bd")
+        buf.write("\u00c5\b\t\1\2\u00be\u00bf\7\f\2\2\u00bf\u00c5\b\t\1\2")
+        buf.write("\u00c0\u00c1\7\20\2\2\u00c1\u00c5\b\t\1\2\u00c2\u00c3")
+        buf.write("\7\13\2\2\u00c3\u00c5\b\t\1\2\u00c4\u00ba\3\2\2\2\u00c4")
         buf.write("\u00bc\3\2\2\2\u00c4\u00be\3\2\2\2\u00c4\u00c0\3\2\2\2")
         buf.write("\u00c4\u00c2\3\2\2\2\u00c5\21\3\2\2\2\u00c6\u00c7\7\27")
         buf.write("\2\2\u00c7\u00c8\5\16\b\2\u00c8\u00c9\b\n\1\2\u00c9\u00cf")
         buf.write("\3\2\2\2\u00ca\u00cb\7\34\2\2\u00cb\u00cc\5\16\b\2\u00cc")
         buf.write("\u00cd\b\n\1\2\u00cd\u00cf\3\2\2\2\u00ce\u00c6\3\2\2\2")
-        buf.write("\u00ce\u00ca\3\2\2\2\u00cf\23\3\2\2\2\u00d0\u00d1\7\16")
-        buf.write("\2\2\u00d1\u00d2\7\n\2\2\u00d2\u00d3\7\4\2\2\u00d3\u00d4")
+        buf.write("\u00ce\u00ca\3\2\2\2\u00cf\23\3\2\2\2\u00d0\u00d1\7\17")
+        buf.write("\2\2\u00d1\u00d2\7\13\2\2\u00d2\u00d3\7\4\2\2\u00d3\u00d4")
         buf.write("\5\26\f\2\u00d4\u00d5\7\5\2\2\u00d5\u00d9\7\6\2\2\u00d6")
         buf.write("\u00d8\7\22\2\2\u00d7\u00d6\3\2\2\2\u00d8\u00db\3\2\2")
         buf.write("\2\u00d9\u00d7\3\2\2\2\u00d9\u00da\3\2\2\2\u00da\u00dc")
@@ -106,27 +106,27 @@ def serializedATN():
         buf.write("\u00df\7\22\2\2\u00de\u00dd\3\2\2\2\u00df\u00e2\3\2\2")
         buf.write("\2\u00e0\u00de\3\2\2\2\u00e0\u00e1\3\2\2\2\u00e1\u00e3")
         buf.write("\3\2\2\2\u00e2\u00e0\3\2\2\2\u00e3\u00e4\7\7\2\2\u00e4")
-        buf.write("\u00e5\b\13\1\2\u00e5\25\3\2\2\2\u00e6\u00e9\7\n\2\2\u00e7")
-        buf.write("\u00e8\7\b\2\2\u00e8\u00ea\5\26\f\2\u00e9\u00e7\3\2\2")
-        buf.write("\2\u00e9\u00ea\3\2\2\2\u00ea\u00eb\3\2\2\2\u00eb\u00ec")
-        buf.write("\b\f\1\2\u00ec\27\3\2\2\2\u00ed\u00ee\7\16\2\2\u00ee\u00ef")
-        buf.write("\7\n\2\2\u00ef\u00f0\7\4\2\2\u00f0\u00f1\5\26\f\2\u00f1")
-        buf.write("\u00f3\7\5\2\2\u00f2\u00f4\5\22\n\2\u00f3\u00f2\3\2\2")
-        buf.write("\2\u00f3\u00f4\3\2\2\2\u00f4\u00f5\3\2\2\2\u00f5\u00f6")
-        buf.write("\5\32\16\2\u00f6\u00f7\b\r\1\2\u00f7\31\3\2\2\2\u00f8")
-        buf.write("\u00fa\5\34\17\2\u00f9\u00fb\5\32\16\2\u00fa\u00f9\3\2")
-        buf.write("\2\2\u00fa\u00fb\3\2\2\2\u00fb\u00fc\3\2\2\2\u00fc\u00fd")
-        buf.write("\b\16\1\2\u00fd\33\3\2\2\2\u00fe\u00ff\5\16\b\2\u00ff")
-        buf.write("\u0100\b\17\1\2\u0100\u0105\3\2\2\2\u0101\u0102\5\36\20")
-        buf.write("\2\u0102\u0103\b\17\1\2\u0103\u0105\3\2\2\2\u0104\u00fe")
-        buf.write("\3\2\2\2\u0104\u0101\3\2\2\2\u0105\35\3\2\2\2\u0106\u0107")
-        buf.write("\7\35\2\2\u0107\u0108\7\4\2\2\u0108\u0109\5 \21\2\u0109")
-        buf.write("\u010a\7\5\2\2\u010a\u010b\b\20\1\2\u010b\37\3\2\2\2\u010c")
-        buf.write("\u010f\5\16\b\2\u010d\u010e\7\b\2\2\u010e\u0110\5 \21")
-        buf.write("\2\u010f\u010d\3\2\2\2\u010f\u0110\3\2\2\2\u0110\u0111")
-        buf.write("\3\2\2\2\u0111\u0112\b\21\1\2\u0112!\3\2\2\2\33%,\65:")
-        buf.write("@DKQUaeq\u0080\u0090\u00b5\u00b7\u00c4\u00ce\u00d9\u00e0")
-        buf.write("\u00e9\u00f3\u00fa\u0104\u010f")
+        buf.write("\u00e5\b\13\1\2\u00e5\25\3\2\2\2\u00e6\u00e9\7\13\2\2")
+        buf.write("\u00e7\u00e8\7\b\2\2\u00e8\u00ea\5\26\f\2\u00e9\u00e7")
+        buf.write("\3\2\2\2\u00e9\u00ea\3\2\2\2\u00ea\u00eb\3\2\2\2\u00eb")
+        buf.write("\u00ec\b\f\1\2\u00ec\27\3\2\2\2\u00ed\u00ee\7\17\2\2\u00ee")
+        buf.write("\u00ef\7\13\2\2\u00ef\u00f0\7\4\2\2\u00f0\u00f1\5\26\f")
+        buf.write("\2\u00f1\u00f3\7\5\2\2\u00f2\u00f4\5\22\n\2\u00f3\u00f2")
+        buf.write("\3\2\2\2\u00f3\u00f4\3\2\2\2\u00f4\u00f5\3\2\2\2\u00f5")
+        buf.write("\u00f6\5\32\16\2\u00f6\u00f7\b\r\1\2\u00f7\31\3\2\2\2")
+        buf.write("\u00f8\u00fa\5\34\17\2\u00f9\u00fb\5\32\16\2\u00fa\u00f9")
+        buf.write("\3\2\2\2\u00fa\u00fb\3\2\2\2\u00fb\u00fc\3\2\2\2\u00fc")
+        buf.write("\u00fd\b\16\1\2\u00fd\33\3\2\2\2\u00fe\u00ff\5\16\b\2")
+        buf.write("\u00ff\u0100\b\17\1\2\u0100\u0105\3\2\2\2\u0101\u0102")
+        buf.write("\5\36\20\2\u0102\u0103\b\17\1\2\u0103\u0105\3\2\2\2\u0104")
+        buf.write("\u00fe\3\2\2\2\u0104\u0101\3\2\2\2\u0105\35\3\2\2\2\u0106")
+        buf.write("\u0107\7\35\2\2\u0107\u0108\7\4\2\2\u0108\u0109\5 \21")
+        buf.write("\2\u0109\u010a\7\5\2\2\u010a\u010b\b\20\1\2\u010b\37\3")
+        buf.write("\2\2\2\u010c\u010f\5\16\b\2\u010d\u010e\7\b\2\2\u010e")
+        buf.write("\u0110\5 \21\2\u010f\u010d\3\2\2\2\u010f\u0110\3\2\2\2")
+        buf.write("\u0110\u0111\3\2\2\2\u0111\u0112\b\21\1\2\u0112!\3\2\2")
+        buf.write("\2\33%,\65:@DKQUaeq\u0080\u0090\u00b5\u00b7\u00c4\u00ce")
+        buf.write("\u00d9\u00e0\u00e9\u00f3\u00fa\u0104\u010f")
         return buf.getvalue()
 
 
@@ -142,14 +142,14 @@ class BetaAssemblyParser ( Parser ):
 
     literalNames = [ "<INVALID>", "':'", "'('", "')'", "'{'", "'}'", "','", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                     "<INVALID>", "'.macro'", "'.include'", "'.'", "<INVALID>", 
+                     "<INVALID>", "<INVALID>", "'.macro'", "'.'", "<INVALID>", 
                      "<INVALID>", "'^'", "'/'", "'*'", "'+'", "'-'", "'='", 
                      "'>>'", "'<<'", "'%'", "'~'", "'_/xx'", "'_/xy'" ]
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "COMMENT", 
-                      "IDENTIFIER", "NB_DECIMAL", "NB_BINARY", "NB_HEXA", 
-                      "MACRO", "INCLUDE", "DOT", "WSPACE", "NEWLINE", "EXP", 
+                      "INCLUDE", "IDENTIFIER", "NB_DECIMAL", "NB_BINARY", 
+                      "NB_HEXA", "MACRO", "DOT", "WSPACE", "NEWLINE", "EXP", 
                       "DIV", "MULT", "PLUS", "MINUS", "EQUAL", "SHR", "SHL", 
                       "MOD", "COMPL", "MACRO_ID", "VAR_ID" ]
 
@@ -183,12 +183,12 @@ class BetaAssemblyParser ( Parser ):
     T__4=5
     T__5=6
     COMMENT=7
-    IDENTIFIER=8
-    NB_DECIMAL=9
-    NB_BINARY=10
-    NB_HEXA=11
-    MACRO=12
-    INCLUDE=13
+    INCLUDE=8
+    IDENTIFIER=9
+    NB_DECIMAL=10
+    NB_BINARY=11
+    NB_HEXA=12
+    MACRO=13
     DOT=14
     WSPACE=15
     NEWLINE=16

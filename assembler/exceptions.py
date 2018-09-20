@@ -1,3 +1,6 @@
+from antlr4.error.ErrorListener import ErrorListener
+
+
 class BetaAssemblyError(ValueError):
     pass
 
@@ -77,3 +80,21 @@ class BetaAssemblyContextSensitivityError(BetaAssemblyError):
             "SyntaxError: attempting full context in BetaAssembly at {}:{}".format(
                 self._start, self._stop
             ))
+
+
+class BetaAssemblyErrorListener(ErrorListener):
+    """Error listener enabling fine-grained error handling """
+    def __init__(self):
+        super(BetaAssemblyErrorListener, self).__init__()
+
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        raise BetaAssemblySyntaxError(recognizer, offendingSymbol, line, column, msg, e)
+
+    def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
+        raise BetaAssemblyAmbiguityError(recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs)
+
+    def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
+        raise BetaAssemblyAttemptingFullContextError(recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs)
+
+    def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
+        raise BetaAssemblyContextSensitivityError(recognizer, dfa, startIndex, stopIndex, prediction, configs)
