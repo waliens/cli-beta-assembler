@@ -22,60 +22,57 @@ class SymbolNameTable(object):
     def has_variable(self, identifier):
         return identifier in self._init_variables
 
-
-class BetaAssemblyLexerWithSymbolNameTable(BetaAssemblyLexer):
-    def __init__(self, symbol_name_table, **kwargs):
-        super(BetaAssemblyLexerWithSymbolNameTable, self).__init__(**kwargs)
-        self._snt = symbol_name_table
+    @property
+    def macros(self):
+        return self._init_macros
 
     @property
-    def symbol_table(self):
-        return self._snt
+    def variables(self):
+        return self._init_variables
 
 
-class BetaAssemblyParserWithSymbolNameTable(BetaAssemblyParser):
-    def __init__(self, symbol_name_table, **kwargs):
-        super(BetaAssemblyParserWithSymbolNameTable, self).__init__(**kwargs)
-        self._snt = symbol_name_table
-
-    @property
-    def symbol_table(self):
-        return self._snt
-
-
-def parse_file(filepath: str):
+def parse_file(filepath: str, parsed_files=None, symbol_table: SymbolNameTable=None):
     with open(filepath, "r", encoding="utf-8") as stream:
-        return parse_stream(stream)
+        return parse_string(stream.read(), parsed_files=parsed_files, symbol_table=symbol_table)
 
 
-def parse_string(data: str):
-    return parse_stream(InputStream(data))
+def parse_string(data: str, parsed_files=None, symbol_table: SymbolNameTable=None):
+    return parse_stream(InputStream(data), parsed_files=parsed_files, symbol_table=symbol_table)
 
 
-def parse_stream(stream):
+def parse_stream(stream, parsed_files=None, symbol_table: SymbolNameTable=None):
     """Parse a stream
 
     Parameters
     ----------
     stream:
         Stream to parse
+    parsed_files: iterable
+        The absolute path of the files that have been parsed before this one. None or list() if no files have been
+        parsed before.
+    symbol_table: SymbolNameTable
+        A symbol table containing already defined identifiers
 
     Returns
     -------
     tree: BetaTree
         Syntax tree of the parsed stream
     symbol_table: SymbolNameTable
-        Symbol table resulting from the parsing. Contains names of all found macros and variables.
+        Symbol table resulting from the parsing. Contains names of all found macros and variables. If a symbol_table
+        was passed to the function, the same table is returned but augmented with newly found identifiers.
 
     Raises
     ------
     BetaAssemblySyntaxError:
         Raised if a syntax error is found in the stream.
     """
-    name_table = SymbolNameTable()
-    lexer = BetaAssemblyLexerWithSymbolNameTable(name_table, input=stream)
+    name_table = SymbolNameTable() if symbol_table is None else symbol_table
+    lexer = BetaAssemblyLexer(stream)
+    lexer.symbol_table = name_table
     token_stream = CommonTokenStream(lexer)
-    parser = BetaAssemblyParserWithSymbolNameTable(name_table, input=token_stream)
+    parser = BetaAssemblyParser(input=token_stream)
+    parser.symbol_table = name_table
+    parser.parsed_files = [] if parsed_files is None else parsed_files
     parser._listeners = [BetaAssemblyErrorListener()]
     tree = parser.start().beta_tree
     return tree, name_table

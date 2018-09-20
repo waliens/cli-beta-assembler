@@ -5,22 +5,23 @@ class BetaAssemblyError(ValueError):
     pass
 
 
-class UnknownVariableError(BetaAssemblyError):
-    def __init__(self, var):
-        super(UnknownVariableError, self).__init__("Unknown variable '{}'.".format(var))
+class BetaAssemblySemanticError(ValueError):
+    def __init__(self, source, line, col, msg):
+        super(BetaAssemblySemanticError, self).__init__("In file '{}' at {}:{}: {}.".format(source, line, col, msg))
 
 
-class InvalidFunctionError(BetaAssemblyError):
-    """Invalid function error"""
-    def __init__(self, func):
-        super(InvalidFunctionError, self).__init__("Invalid function '{}'.".format(func))
+class IncludeFileNotFoundError(BetaAssemblySemanticError):
+    def __init__(self, source, line, col, included_filepath):
+        super(IncludeFileNotFoundError, self).__init__(
+            source, line, col, "included file '{}' was not found".format(included_filepath)
+        )
 
 
-class InvalidParametersCountError(BetaAssemblyError):
-    """Parameters count error"""
-    def __init__(self, func, actual, expected):
-        super(InvalidParametersCountError, self).__init__("Invalid number of parameters for func {} (actual:{} "
-                                                          "expexted{})".format(func, actual, expected))
+class CircularInclusionError(BetaAssemblySemanticError):
+    def __init__(self, source, line, col, included_filepath):
+        super(CircularInclusionError, self).__init__(
+            source, line, col, "circular inclusion of '{}'".format(included_filepath)
+        )
 
 
 class BetaAssemblySyntaxError(BetaAssemblyError):

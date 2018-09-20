@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from assembler.exceptions import BetaAssemblySyntaxError
 from assembler.nodes import Number, Macro, NegateOp, PlusOp, MultOp, Assignment, MacroInvocation, Identifier
-from assembler.parse_util import parse_string
+from assembler.parse_util import parse_string, parse_file
 
 
 class TestGrammar(TestCase):
@@ -160,3 +160,7 @@ a (1)
         self.assertIsInstance(tree.children[4], MacroInvocation)
         self.assertIsInstance(tree.children[5], Identifier)
         self.assertIsInstance(tree.children[6], Number)
+
+    def testInclude(self):
+        tree, _ = parse_file("test_files/test_import_file1.asm", parsed_files=["test_files/test_import_file1.asm"])
+        self.assertEqual(6, len(tree.children))
