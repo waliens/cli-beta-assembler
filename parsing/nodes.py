@@ -68,6 +68,10 @@ class Dot(Atom):
     def __str__(self):
         return "."
 
+    @property
+    def name(self):
+        return str(self)
+
 
 class UnaryOperator(Node, metaclass=ABCMeta):
     """AST node: generic unary operator"""
@@ -241,6 +245,17 @@ class Assignment(Node):
 
     def __str__(self):
         return "{} <- {}".format(self._identifier, self._assigned)
+
+    @property
+    def name(self):
+        return self._identifier.name
+
+    def is_dot(self):
+        return isinstance(self._identifier, Dot)
+
+    @property
+    def assigned(self):
+        return self._assigned
 
 
 class Macro(Node):
