@@ -12,6 +12,3 @@ class SymbolTableVisitor(BetaAssemblyVisitor):
         self._tables.add_macro(node)
         self._visitChildren(node)
 
-    def visitAssignment(self, node: Assignment):
-        self._tables.add_variable(node)
-        self._visitChildren(node)

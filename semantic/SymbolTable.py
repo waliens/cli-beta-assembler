@@ -15,5 +15,9 @@ class SymbolTables(object):
     def add_macro(self, macro: Macro):
         self._macros[self._macro_key(macro)] = macro
 
-    def add_variable(self, assignment: Assignment):
-        self._variables[assignment.name] = assignment
+    def add_variable(self, variable: str, value):
+        """Value is an integer value"""
+        self._variables[variable] = value
+
+    def get_variable(self, variable: str):
+        return self._variables[variable]
