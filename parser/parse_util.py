@@ -1,6 +1,6 @@
 from antlr4 import InputStream, CommonTokenStream
 
-from assembler.exceptions import BetaAssemblyErrorListener
+from parser.exceptions import BetaAssemblyErrorListener
 from .BetaAssemblyLexer import BetaAssemblyLexer
 from .BetaAssemblyParser import BetaAssemblyParser
 
