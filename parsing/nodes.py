@@ -260,7 +260,7 @@ class Assignment(Node):
 
 class Macro(Node):
     def __init__(self, name, arguments, body):
-        super(Macro, self).__init__(children=[name, arguments] + body)
+        super(Macro, self).__init__(children=body)
         self._name = name
         self._arguments = arguments
         self._body = body
@@ -290,7 +290,7 @@ class Macro(Node):
 
 class MacroInvocation(Node):
     def __init__(self, name, parameters):
-        super(MacroInvocation, self).__init__(children=[name, parameters])
+        super(MacroInvocation, self).__init__(children=parameters)
         self._name = name
         self._parameters = parameters
 

@@ -109,7 +109,7 @@ $nodes = tree.children
 // Identifier definition (regular identifiers + labels)
 assignment returns[Assignment assign]
     : IDENTIFIER EQUAL assignment_rhs {
-$assign = Assignment($IDENTIFIER.text, $assignment_rhs.node)
+$assign = Assignment(Identifier($IDENTIFIER.text), $assignment_rhs.node)
 self.symbol_table.add_variable($IDENTIFIER.text)
 }
       | DOT EQUAL assignment_rhs  {$assign = Assignment(Dot(), $assignment_rhs.node) }

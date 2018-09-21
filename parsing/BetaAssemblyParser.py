@@ -807,7 +807,7 @@ class BetaAssemblyParser ( Parser ):
                 self.state = 127
                 localctx._assignment_rhs = self.assignment_rhs()
 
-                localctx.assign = Assignment((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text), localctx._assignment_rhs.node)
+                localctx.assign = Assignment(Identifier((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text)), localctx._assignment_rhs.node)
                 self.symbol_table.add_variable((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text))
 
                 pass
