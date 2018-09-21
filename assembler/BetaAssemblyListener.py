@@ -67,6 +67,15 @@ class BetaAssemblyListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by BetaAssemblyParser#assignment_rhs.
+    def enterAssignment_rhs(self, ctx:BetaAssemblyParser.Assignment_rhsContext):
+        pass
+
+    # Exit a parse tree produced by BetaAssemblyParser#assignment_rhs.
+    def exitAssignment_rhs(self, ctx:BetaAssemblyParser.Assignment_rhsContext):
+        pass
+
+
     # Enter a parse tree produced by BetaAssemblyParser#expression.
     def enterExpression(self, ctx:BetaAssemblyParser.ExpressionContext):
         pass

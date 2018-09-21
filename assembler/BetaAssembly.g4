@@ -108,17 +108,17 @@ $nodes = tree.children
 
 // Identifier definition (regular identifiers + labels)
 assignment returns[Assignment assign]
-    : IDENTIFIER EQUAL expression {
-$assign = Assignment($IDENTIFIER.text, $expression.node)
+    : IDENTIFIER EQUAL assignment_rhs {
+$assign = Assignment($IDENTIFIER.text, $assignment_rhs.node)
 self.symbol_table.add_variable($IDENTIFIER.text)
 }
-      | IDENTIFIER EQUAL unary    {
-$assign = Assignment($IDENTIFIER.text, $unary.node)
-self.symbol_table.add_variable($IDENTIFIER.text)
-}
+      | DOT EQUAL assignment_rhs  {$assign = Assignment(Dot(), $assignment_rhs.node) }
       | IDENTIFIER ':'            {$assign = Assignment($IDENTIFIER.text, Dot()) }
-      | DOT EQUAL expression      {$assign = Assignment(Dot(), $expression.node) }
-      | DOT EQUAL unary           {$assign = Assignment(Dot(), $unary.node) }
+;
+
+assignment_rhs returns[Node node]
+    : expression {$node = $expression.node }
+      | unary    {$node = $unary.node }
 ;
 
 // Expression
