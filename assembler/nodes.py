@@ -286,3 +286,13 @@ class MacroInvocation(Node):
         return "{}({})".format(self._name, ", ".join([str(p) for p in self._parameters]))
 
 
+class Align(Node):
+    def __init__(self, expression):
+        super(Align, self).__init__(children=[expression])
+        self._expression = expression
+
+    def accept(self, visitor):
+        visitor.visitAlign(self)
+
+    def __str__(self):
+        return ".align {}".format(str(self._expression))

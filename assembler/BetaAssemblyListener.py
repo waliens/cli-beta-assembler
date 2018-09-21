@@ -6,7 +6,7 @@ else:
     from BetaAssemblyParser import BetaAssemblyParser
 
 import os
-from .nodes import BetaTree, Node, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
+from .nodes import BetaTree, Node, Align, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
 from .exceptions import IncludeFileNotFoundError, CircularInclusionError
 
 
@@ -103,6 +103,15 @@ class BetaAssemblyListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by BetaAssemblyParser#macro_def_identifier.
+    def enterMacro_def_identifier(self, ctx:BetaAssemblyParser.Macro_def_identifierContext):
+        pass
+
+    # Exit a parse tree produced by BetaAssemblyParser#macro_def_identifier.
+    def exitMacro_def_identifier(self, ctx:BetaAssemblyParser.Macro_def_identifierContext):
+        pass
+
+
     # Enter a parse tree produced by BetaAssemblyParser#macro_params.
     def enterMacro_params(self, ctx:BetaAssemblyParser.Macro_paramsContext):
         pass
@@ -154,6 +163,15 @@ class BetaAssemblyListener(ParseTreeListener):
 
     # Exit a parse tree produced by BetaAssemblyParser#macro_call_params.
     def exitMacro_call_params(self, ctx:BetaAssemblyParser.Macro_call_paramsContext):
+        pass
+
+
+    # Enter a parse tree produced by BetaAssemblyParser#macro_param.
+    def enterMacro_param(self, ctx:BetaAssemblyParser.Macro_paramContext):
+        pass
+
+    # Exit a parse tree produced by BetaAssemblyParser#macro_param.
+    def exitMacro_param(self, ctx:BetaAssemblyParser.Macro_paramContext):
         pass
 
 

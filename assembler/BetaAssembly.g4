@@ -6,7 +6,7 @@ options { language=Python3; }
 
 @header {
 import os
-from .nodes import BetaTree, Node, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
+from .nodes import BetaTree, Node, Align, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
 from .exceptions import IncludeFileNotFoundError, CircularInclusionError
 }
 
@@ -37,7 +37,8 @@ def current_file_path(self):
 //@lexer::members {
 //def nextToken(self):
 //    token = super().nextToken()
-//    print("Token: {} [{}] [{}]".format(self.ruleNames[token.type - 1], token.type, token.text))
+//    if token.type != 17:
+//        print("Token: {} [{}] [{}]".format(self.ruleNames[token.type - 1], token.type, token.text))
 //    return token
 //}
 
@@ -70,6 +71,7 @@ if $beta_items.ctx is not None:
 beta returns[list nodes]
     : expression                {$nodes = [$expression.node] }
       | assignment              {$nodes = [$assignment.assign] }
+      | ALIGN expression        {$nodes = [Align($expression.node)] }
       | non_expression (unary)? {
 $nodes = $non_expression.nodes
 if $unary.ctx is not None:
@@ -115,6 +117,8 @@ $assign = Assignment($IDENTIFIER.text, $unary.node)
 self.symbol_table.add_variable($IDENTIFIER.text)
 }
       | IDENTIFIER ':'            {$assign = Assignment($IDENTIFIER.text, Dot()) }
+      | DOT EQUAL expression      {$assign = Assignment(Dot(), $expression.node) }
+      | DOT EQUAL unary           {$assign = Assignment(Dot(), $unary.node) }
 ;
 
 // Expression
@@ -148,11 +152,15 @@ unary returns[Node node]
 
 // Macro definition (e.g. `.macro ADD(Ra, Rb, Rc) `)
 multiline_macro returns[Macro macro]
-    : MACRO IDENTIFIER '(' macro_params ')' '{' NEWLINE* beta_block NEWLINE* '}' {
-$macro = Macro($IDENTIFIER.text, $macro_params.params, $beta_block.nodes)
-self.symbol_table.add_macro($IDENTIFIER.text)
+    : MACRO macro_def_identifier '(' macro_params ')' '{' NEWLINE* beta_block NEWLINE* '}' {
+$macro = Macro($macro_def_identifier.name, $macro_params.params, $beta_block.nodes)
+self.symbol_table.add_macro($macro_def_identifier.name)
 }
 ;
+
+macro_def_identifier returns[str name]
+    : IDENTIFIER {$name = $IDENTIFIER.text }
+      | MACRO_ID {$name = $MACRO_ID.text   } ;
 
 macro_params returns[list params]
     : IDENTIFIER (',' macro_params) ? {
@@ -164,13 +172,14 @@ if $macro_params.ctx is not None:
 
 // Inline macro
 inline_macro returns[Macro macro]
-    : MACRO IDENTIFIER '(' macro_params ')' unary? beta_items_inline {
+    : MACRO macro_def_identifier '(' macro_params? ')' unary? beta_items_inline {
 nodes = []
 if $unary.ctx is not None:
     nodes.append($unary.node)
 nodes.extend($beta_items_inline.nodes)
-$macro = Macro($IDENTIFIER.text, $macro_params.params, nodes)
-self.symbol_table.add_macro($IDENTIFIER.text)
+params = [] if $macro_params.ctx is None else $macro_params.params
+$macro = Macro($macro_def_identifier.name, params, nodes)
+self.symbol_table.add_macro($macro_def_identifier.name)
 }
 ;
 
@@ -186,24 +195,35 @@ if $beta_items_inline.ctx is not None:
 reduced_beta returns[Node node]
     : expression   {$node = $expression.node }
       | macro_call {$node = $macro_call.call }
+      | assignment {$node = $assignment.assign }
 ;
 
 // Macro calls (e.g. ADD(R1, r3, R4), LD(R1, 0x4, R6),...)
 macro_call returns[MacroInvocation call]
-    : MACRO_ID '(' macro_call_params ')' {$call = MacroInvocation($MACRO_ID.text, $macro_call_params.params) }
+    : MACRO_ID '(' macro_call_params? ')' {
+params = [] if $macro_call_params.ctx is None else $macro_call_params.params
+$call = MacroInvocation($MACRO_ID.text, params)
+}
 ;
 
 macro_call_params returns[list params]
-    : expression (',' macro_call_params) ? {
-$params = [$expression.node]
+    : macro_param (',' macro_call_params) ? {
+$params = [$macro_param.node]
 if $macro_call_params.ctx is not None:
     $params.extend($macro_call_params.params)
 }
 ;
 
+macro_param returns[Node node]
+    : expression {$node = $expression.node }
+      | unary    {$node = $unary.node }
+;
+
 // Lexer rules
 COMMENT   : '|' ~[\r\n]* -> skip;
-INCLUDE : '.include' [ \t\f]+ ~[ \n\r\f\t]+ ;
+INCLUDE   : '.include' [ \t\f]+ ~[ \n\r\f\t]+ ;
+MACRO     : '.macro' ;
+ALIGN     : '.align';
 IDENTIFIER: [a-zA-Z][a-zA-Z0-9_]* {
 val = self.text
 if self.symbol_table.has_macro(val):
@@ -214,7 +234,6 @@ else:
 NB_DECIMAL: [0-9]+('.'[0-9]+|'e''-'?[0-9]+)? ;
 NB_BINARY : '0b'[01]+ ;
 NB_HEXA   : '0x'[0-9A-Fa-f]+ ;
-MACRO     : '.macro' ;
 DOT       : '.' ;
 WSPACE    : [ \t\f]+ -> skip ;
 NEWLINE   : '\r'? '\n' ;

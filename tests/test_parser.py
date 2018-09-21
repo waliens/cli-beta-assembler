@@ -162,5 +162,15 @@ a (1)
         self.assertIsInstance(tree.children[6], Number)
 
     def testInclude(self):
-        tree, _ = parse_file("test_files/test_import_file1.asm", parsed_files=["test_files/test_import_file1.asm"])
-        self.assertEqual(6, len(tree.children))
+        filepath = "test_files/test_import_file1.asm"
+        tree, _ = parse_file(filepath, parsed_files=[filepath])
+        self.assertEqual(4, len(tree.children))
+        self.assertIsInstance(tree.children[0], Macro)
+        self.assertIsInstance(tree.children[1], Assignment)
+        self.assertIsInstance(tree.children[2], MacroInvocation)
+        self.assertIsInstance(tree.children[3], PlusOp)
+
+    def testParseBetaUasm(self):
+        filepath = "test_files/beta.uasm"
+        tree, _ = parse_file(filepath, parsed_files=[filepath])
+        self.assertEqual(151, len(tree.children))
