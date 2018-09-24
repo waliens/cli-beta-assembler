@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from operator import add, sub, mul, truediv, neg
+from operator import add, sub, mul, truediv, neg, inv
 
 
 class Node(metaclass=ABCMeta):
@@ -15,11 +15,6 @@ class Node(metaclass=ABCMeta):
         pass
 
 
-class Atom(Node, metaclass=ABCMeta):
-    def __init__(self, children=None):
-        super(Atom, self).__init__(children=children)
-
-
 class BetaTree(Node):
     def __init__(self, nodes):
         super(BetaTree, self).__init__(nodes)
@@ -30,6 +25,20 @@ class BetaTree(Node):
 
     def __str__(self):
         return "Beta:\n{}".format("\n".join([str(n) for n in self._nodes]))
+
+
+class Expression(Node, metaclass=ABCMeta):
+    def __init__(self, children=None):
+        super(Expression, self).__init__(children=children)
+
+    @abstractmethod
+    def eval(self, symbol_table=None, next_byte=None):
+        pass
+
+
+class Atom(Expression, metaclass=ABCMeta):
+    def __init__(self, children=None):
+        super(Atom, self).__init__(children=children)
 
 
 class Number(Atom):
@@ -57,6 +66,9 @@ class Number(Atom):
     def __str__(self):
         return "{}".format(self._value)
 
+    def eval(self, symbol_table=None, next_byte=None):
+        return self.value
+
 
 class Dot(Atom):
     def __init__(self):
@@ -72,8 +84,11 @@ class Dot(Atom):
     def name(self):
         return str(self)
 
+    def eval(self, symbol_table=None, next_byte=None):
+        return next_byte
 
-class UnaryOperator(Node, metaclass=ABCMeta):
+
+class UnaryOperator(Expression, metaclass=ABCMeta):
     """AST node: generic unary operator"""
     def __init__(self, op, expr):
         super(UnaryOperator, self).__init__([expr])
@@ -89,6 +104,13 @@ class UnaryOperator(Node, metaclass=ABCMeta):
 
     def __str__(self):
         return "{}({})".format(self.str_op(), self._expr)
+
+    @property
+    def op(self):
+        return self._op
+
+    def eval(self, symbol_table=None, next_byte=None):
+        return self._op(self._expr.eval(symbol_table=symbol_table))
 
 
 class NegateOp(UnaryOperator):
@@ -106,7 +128,7 @@ class NegateOp(UnaryOperator):
 class BitwiseComplementOp(UnaryOperator):
     """AST node: '~' operator"""
     def __init__(self, expr):
-        super(BitwiseComplementOp, self).__init__(neg, expr)
+        super(BitwiseComplementOp, self).__init__(inv, expr)
 
     def accept(self, visitor):
         visitor.visitBitwiseComplementOp(self)
@@ -115,7 +137,7 @@ class BitwiseComplementOp(UnaryOperator):
         return "~"
 
 
-class BinaryOperator(Node, metaclass=ABCMeta):
+class BinaryOperator(Expression, metaclass=ABCMeta):
     """AST node: generic binary operator"""
     def __init__(self, op, left, right):
         super(BinaryOperator, self).__init__([left, right])
@@ -132,6 +154,16 @@ class BinaryOperator(Node, metaclass=ABCMeta):
 
     def __str__(self):
         return "{} {} {}".format(self._left, self.str_op(), self._right)
+
+    @property
+    def op(self):
+        return self._op
+
+    def eval(self, symbol_table=None, next_byte=None):
+        return self._op(
+            self._left.eval(symbol_table=symbol_table),
+            self._right.eval(symbol_table=symbol_table)
+        )
 
 
 class PlusOp(BinaryOperator):
@@ -218,7 +250,7 @@ class ShiftRightOp(BinaryOperator):
         return ">>"
 
 
-class Identifier(Node):
+class Identifier(Expression):
     def __init__(self, name):
         super(Identifier, self).__init__()
         self._name = name
@@ -233,29 +265,32 @@ class Identifier(Node):
     def name(self):
         return self._name
 
+    def eval(self, symbol_table=None, next_byte=None):
+        return symbol_table.get_variable(self.name)
+
 
 class Assignment(Node):
-    def __init__(self, identifier, assigned):
-        super(Assignment, self).__init__(children=[identifier, assigned])
-        self._identifier = identifier
-        self._assigned = assigned
+    def __init__(self, lhs, rhs):
+        super(Assignment, self).__init__(children=[lhs, rhs])
+        self._lhs = lhs
+        self._rhs = rhs
 
     def accept(self, visitor):
         visitor.visitAssignment(self)
 
     def __str__(self):
-        return "{} <- {}".format(self._identifier, self._assigned)
+        return "{} <- {}".format(self._lhs, self._rhs)
 
     @property
-    def name(self):
-        return self._identifier.name
+    def lhs(self):
+        return self._lhs
 
     def is_dot(self):
-        return isinstance(self._identifier, Dot)
+        return isinstance(self._lhs, Dot)
 
     @property
-    def assigned(self):
-        return self._assigned
+    def rhs(self):
+        return self._rhs
 
 
 class Macro(Node):
