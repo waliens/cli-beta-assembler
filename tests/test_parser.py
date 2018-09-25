@@ -107,6 +107,12 @@ a = 2 b = 3
 { a+b+c }
 """)
 
+        tree = self._parse(""".macro A() { 1 2 3 }""")
+        macro = tree.children[0]
+        self.assertEqual("A", macro.name)
+        self.assertEqual(0, len(macro.arguments))
+        self.assertEqual(3, len(macro.body))
+
     def testMacroInline(self):
         tree = self._parse("""
 .macro ADD(a) 0x0 0x0 a+2

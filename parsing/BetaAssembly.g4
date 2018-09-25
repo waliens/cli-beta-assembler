@@ -34,13 +34,13 @@ def current_file_path(self):
 }
 
 
-//@lexer::members {
-//def nextToken(self):
-//    token = super().nextToken()
-//    if token.type != 17:
-//        print("Token: {} [{}] [{}]".format(self.ruleNames[token.type - 1], token.type, token.text))
-//    return token
-//}
+@lexer::members {
+def nextToken(self):
+    token = super().nextToken()
+    if token.type != 17:
+        print("Token: {} [{}] [{}]".format(self.ruleNames[token.type - 1], token.type, token.text))
+    return token
+}
 
 // Parser rules
 start returns[BetaTree beta_tree]
@@ -152,8 +152,9 @@ unary returns[Node node]
 
 // Macro definition (e.g. `.macro ADD(Ra, Rb, Rc) `)
 multiline_macro returns[Macro macro]
-    : MACRO macro_def_identifier '(' macro_params ')' '{' NEWLINE* beta_block NEWLINE* '}' {
-$macro = Macro($macro_def_identifier.name, $macro_params.params, $beta_block.nodes)
+    : MACRO macro_def_identifier '(' macro_params? ')' '{' NEWLINE* beta_block NEWLINE* '}' {
+params = [] if $macro_params.ctx is None else $macro_params.params
+$macro = Macro($macro_def_identifier.name, params, $beta_block.nodes)
 self.symbol_table.add_macro($macro_def_identifier.name)
 }
 ;
