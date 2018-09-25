@@ -34,13 +34,13 @@ def current_file_path(self):
 }
 
 
-@lexer::members {
-def nextToken(self):
-    token = super().nextToken()
-    if token.type != 17:
-        print("Token: {} [{}] [{}]".format(self.ruleNames[token.type - 1], token.type, token.text))
-    return token
-}
+//@lexer::members {
+//def nextToken(self):
+//    token = super().nextToken()
+//    if token.type != 17:
+//        print("Token: {} [{}] [{}]".format(self.ruleNames[token.type - 1], token.type, token.text))
+//    return token
+//}
 
 // Parser rules
 start returns[BetaTree beta_tree]
@@ -71,7 +71,7 @@ if $beta_items.ctx is not None:
 beta returns[list nodes]
     : expression                {$nodes = [$expression.node] }
       | assignment              {$nodes = [$assignment.assign] }
-      | ALIGN expression        {$nodes = [Align($expression.node)] }
+      | ALIGN expression        {$nodes = [Align($expression.node, line=$ALIGN.line, pos=$ALIGN.pos, source=self.current_file_path)] }
       | non_expression (unary)? {
 $nodes = $non_expression.nodes
 if $unary.ctx is not None:
@@ -109,11 +109,11 @@ $nodes = tree.children
 // Identifier definition (regular identifiers + labels)
 assignment returns[Assignment assign]
     : IDENTIFIER EQUAL assignment_rhs {
-$assign = Assignment(Identifier($IDENTIFIER.text), $assignment_rhs.node)
+$assign = Assignment(Identifier($IDENTIFIER.text, line=$IDENTIFIER.line, pos=$IDENTIFIER.pos, source=self.current_file_path), $assignment_rhs.node)
 self.symbol_table.add_variable($IDENTIFIER.text)
 }
-      | DOT EQUAL assignment_rhs  {$assign = Assignment(Dot(), $assignment_rhs.node) }
-      | IDENTIFIER ':'            {$assign = Assignment($IDENTIFIER.text, Dot()) }
+      | DOT EQUAL assignment_rhs  {$assign = Assignment(Dot(line=$DOT.line, pos=$DOT.pos, source=self.current_file_path), $assignment_rhs.node) }
+      | IDENTIFIER ':'            {$assign = Assignment(Identifier($IDENTIFIER.text, line=$IDENTIFIER.line, pos=$IDENTIFIER.pos, source=self.current_file_path), Dot()) }
 ;
 
 assignment_rhs returns[Node node]
@@ -125,36 +125,36 @@ assignment_rhs returns[Node node]
 expression returns[Node node]
     : '(' expression ')'                              {$node = $expression.node }
       | atom                                          {$node = $atom.a }
-      | <assoc=right> a=expression MOD b=expression   {$node = ModuloOp($a.node, $b.node) }
-      |               a=expression MULT  b=expression {$node = MultOp($a.node, $b.node) }
-      |               a=expression DIV   b=expression {$node = DivOp($a.node, $b.node) }
-      |               a=expression PLUS  b=expression {$node = PlusOp($a.node, $b.node) }
-      |               a=expression MINUS b=expression {$node = MinusOp($a.node, $b.node) }
-      |               a=expression SHL   b=expression {$node = ShiftLeftOp($a.node, $b.node) }
-      |               a=expression SHR   b=expression {$node = ShiftRightOp($a.node, $b.node) }
+      | <assoc=right> a=expression MOD b=expression   {$node = ModuloOp($a.node, $b.node, line=$MOD.line , pos=$MOD.pos, source=self.current_file_path) }
+      |               a=expression MULT  b=expression {$node = MultOp($a.node, $b.node, line=$MULT.line, pos=$MULT.pos, source=self.current_file_path) }
+      |               a=expression DIV   b=expression {$node = DivOp($a.node, $b.node, line=$DIV.line, pos=$DIV.pos, source=self.current_file_path) }
+      |               a=expression PLUS  b=expression {$node = PlusOp($a.node, $b.node, line=$PLUS.line, pos=$PLUS.pos, source=self.current_file_path) }
+      |               a=expression MINUS b=expression {$node = MinusOp($a.node, $b.node, line=$MINUS.line, pos=$MINUS.pos, source=self.current_file_path) }
+      |               a=expression SHL   b=expression {$node = ShiftLeftOp($a.node, $b.node, line=$SHL.line, pos=$SHL.pos, source=self.current_file_path) }
+      |               a=expression SHR   b=expression {$node = ShiftRightOp($a.node, $b.node, line=$SHR.line, pos=$SHR.pos, source=self.current_file_path) }
       | '(' unary ')'                                 {$node = $unary.node }
 ;
 
 // Atoms: numbers, dot and identifier
 atom returns[Atom a]
-    : NB_BINARY     {$a = Number(binary=$NB_BINARY.text) }
-      | NB_HEXA     {$a = Number(hexadecimal=$NB_HEXA.text) }
-      | NB_DECIMAL  {$a = Number(decimal=$NB_DECIMAL.text) }
-      | DOT         {$a = Dot() }
-      | IDENTIFIER  {$a = Identifier($IDENTIFIER.text) }
+    : NB_BINARY     {$a = Number(binary=$NB_BINARY.text, line=$NB_BINARY.line, pos=$NB_BINARY.pos, source=self.current_file_path) }
+      | NB_HEXA     {$a = Number(hexadecimal=$NB_HEXA.text, line=$NB_HEXA.line, pos=$NB_HEXA.pos, source=self.current_file_path) }
+      | NB_DECIMAL  {$a = Number(decimal=$NB_DECIMAL.text, line=$NB_DECIMAL.line, pos=$NB_DECIMAL.pos, source=self.current_file_path) }
+      | DOT         {$a = Dot(line=$DOT.line, pos=$DOT.pos, source=self.current_file_path) }
+      | IDENTIFIER  {$a = Identifier($IDENTIFIER.text, line=$IDENTIFIER.line, pos=$IDENTIFIER.pos, source=self.current_file_path) }
 ;
 
 // Unary operators
 unary returns[Node node]
-    : MINUS expression   {$node = NegateOp($expression.node) }
-      | COMPL expression {$node = BitwiseComplementOp($expression.node) }
+    : MINUS expression   {$node = NegateOp($expression.node, line=$MINUS.line, pos=$MINUS.pos, source=self.current_file_path) }
+      | COMPL expression {$node = BitwiseComplementOp($expression.node, line=$COMPL.line, pos=$COMPL.pos, source=self.current_file_path) }
 ;
 
 // Macro definition (e.g. `.macro ADD(Ra, Rb, Rc) `)
 multiline_macro returns[Macro macro]
     : MACRO macro_def_identifier '(' macro_params? ')' '{' NEWLINE* beta_block NEWLINE* '}' {
 params = [] if $macro_params.ctx is None else $macro_params.params
-$macro = Macro($macro_def_identifier.name, params, $beta_block.nodes)
+$macro = Macro($macro_def_identifier.name, params, $beta_block.nodes, line=$MACRO.line, pos=$MACRO.pos, source=self.current_file_path)
 self.symbol_table.add_macro($macro_def_identifier.name)
 }
 ;
@@ -179,7 +179,7 @@ if $unary.ctx is not None:
     nodes.append($unary.node)
 nodes.extend($beta_items_inline.nodes)
 params = [] if $macro_params.ctx is None else $macro_params.params
-$macro = Macro($macro_def_identifier.name, params, nodes)
+$macro = Macro($macro_def_identifier.name, params, nodes, line=$MACRO.line, pos=$MACRO.pos, source=self.current_file_path)
 self.symbol_table.add_macro($macro_def_identifier.name)
 }
 ;
@@ -203,7 +203,7 @@ reduced_beta returns[Node node]
 macro_call returns[MacroInvocation call]
     : MACRO_ID '(' macro_call_params? ')' {
 params = [] if $macro_call_params.ctx is None else $macro_call_params.params
-$call = MacroInvocation($MACRO_ID.text, params)
+$call = MacroInvocation($MACRO_ID.text, params, line=$MACRO_ID.line, pos=$MACRO_ID.pos, source=self.current_file_path)
 }
 ;
 

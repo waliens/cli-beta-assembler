@@ -1,4 +1,5 @@
 from parsing.BetaAssemblyParser import BetaAssemblyParser
+from parsing.exceptions import BetaAssemblyError
 from parsing.parse_util import parse_file
 from semantic.ResolverVisitor import ResolverVisitor
 from semantic.SymbolTable import SymbolTables

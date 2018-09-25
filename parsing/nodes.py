@@ -3,8 +3,11 @@ from operator import add, sub, mul, truediv, neg, inv
 
 
 class Node(metaclass=ABCMeta):
-    def __init__(self, children=None):
+    def __init__(self, children=None, line=None, pos=None, source=None):
         self._children = list() if children is None else children
+        self._line = line
+        self._pos = pos
+        self._source = source
 
     @property
     def children(self):
@@ -14,10 +17,26 @@ class Node(metaclass=ABCMeta):
     def accept(self, visitor):
         pass
 
+    @property
+    def location(self):
+        return "{}:{}".format(self._line, self._pos)
+
+    @property
+    def source(self):
+        return self._source
+
+    @property
+    def line(self):
+        return self._line
+
+    @property
+    def pos(self):
+        return self._pos
+
 
 class BetaTree(Node):
-    def __init__(self, nodes):
-        super(BetaTree, self).__init__(nodes)
+    def __init__(self, nodes, **kwargs):
+        super(BetaTree, self).__init__(nodes, **kwargs)
         self._nodes = nodes
 
     def accept(self, visitor):
@@ -28,8 +47,8 @@ class BetaTree(Node):
 
 
 class Expression(Node, metaclass=ABCMeta):
-    def __init__(self, children=None):
-        super(Expression, self).__init__(children=children)
+    def __init__(self, children=None, **kwargs):
+        super(Expression, self).__init__(children=children, **kwargs)
 
     @abstractmethod
     def eval(self, symbol_table=None, next_byte=None):
@@ -37,13 +56,13 @@ class Expression(Node, metaclass=ABCMeta):
 
 
 class Atom(Expression, metaclass=ABCMeta):
-    def __init__(self, children=None):
-        super(Atom, self).__init__(children=children)
+    def __init__(self, children=None, **kwargs):
+        super(Atom, self).__init__(children=children, **kwargs)
 
 
 class Number(Atom):
-    def __init__(self, hexadecimal=None, decimal=None, binary=None):
-        super(Number, self).__init__()
+    def __init__(self, hexadecimal=None, decimal=None, binary=None, **kwargs):
+        super(Number, self).__init__(children=None, **kwargs)
         self._value = self._parse(hexa=hexadecimal, deci=decimal, bina=binary)
 
     @staticmethod
@@ -71,8 +90,8 @@ class Number(Atom):
 
 
 class Dot(Atom):
-    def __init__(self):
-        super(Atom, self).__init__()
+    def __init__(self, **kwargs):
+        super(Atom, self).__init__(**kwargs)
 
     def accept(self, visitor):
         visitor.visitDot(self)
@@ -90,8 +109,8 @@ class Dot(Atom):
 
 class UnaryOperator(Expression, metaclass=ABCMeta):
     """AST node: generic unary operator"""
-    def __init__(self, op, expr):
-        super(UnaryOperator, self).__init__([expr])
+    def __init__(self, op, expr, **kwargs):
+        super(UnaryOperator, self).__init__([expr], **kwargs)
         self._op = op
         self._expr = expr
 
@@ -115,8 +134,8 @@ class UnaryOperator(Expression, metaclass=ABCMeta):
 
 class NegateOp(UnaryOperator):
     """AST node: '-' operator"""
-    def __init__(self, expr):
-        super(NegateOp, self).__init__(neg, expr)
+    def __init__(self, expr, **kwargs):
+        super(NegateOp, self).__init__(neg, expr, **kwargs)
 
     def accept(self, visitor):
         visitor.visitNegateOp(self)
@@ -127,8 +146,8 @@ class NegateOp(UnaryOperator):
 
 class BitwiseComplementOp(UnaryOperator):
     """AST node: '~' operator"""
-    def __init__(self, expr):
-        super(BitwiseComplementOp, self).__init__(inv, expr)
+    def __init__(self, expr, **kwargs):
+        super(BitwiseComplementOp, self).__init__(inv, expr, **kwargs)
 
     def accept(self, visitor):
         visitor.visitBitwiseComplementOp(self)
@@ -139,8 +158,8 @@ class BitwiseComplementOp(UnaryOperator):
 
 class BinaryOperator(Expression, metaclass=ABCMeta):
     """AST node: generic binary operator"""
-    def __init__(self, op, left, right):
-        super(BinaryOperator, self).__init__([left, right])
+    def __init__(self, op, left, right, **kwargs):
+        super(BinaryOperator, self).__init__([left, right], **kwargs)
         self._op = op
         self._left = left
         self._right = right
@@ -168,8 +187,8 @@ class BinaryOperator(Expression, metaclass=ABCMeta):
 
 class PlusOp(BinaryOperator):
     """AST node: '+' operator"""
-    def __init__(self, left, right):
-        super(PlusOp, self).__init__(add, left, right)
+    def __init__(self, left, right, **kwargs):
+        super(PlusOp, self).__init__(add, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitPlusOp(self)
@@ -180,8 +199,8 @@ class PlusOp(BinaryOperator):
 
 class MinusOp(BinaryOperator):
     """AST node: '-' operator"""
-    def __init__(self, left, right):
-        super(MinusOp, self).__init__(sub, left, right)
+    def __init__(self, left, right, **kwargs):
+        super(MinusOp, self).__init__(sub, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitMinusOp(self)
@@ -192,8 +211,8 @@ class MinusOp(BinaryOperator):
 
 class MultOp(BinaryOperator):
     """AST node: '*' operator"""
-    def __init__(self, left, right):
-        super(MultOp, self).__init__(mul, left, right)
+    def __init__(self, left, right, **kwargs):
+        super(MultOp, self).__init__(mul, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitMultOp(self)
@@ -204,8 +223,8 @@ class MultOp(BinaryOperator):
 
 class DivOp(BinaryOperator):
     """AST node: '/' operator"""
-    def __init__(self, left, right):
-        super(DivOp, self).__init__(truediv, left, right)
+    def __init__(self, left, right, **kwargs):
+        super(DivOp, self).__init__(truediv, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitDivOp(self)
@@ -216,8 +235,8 @@ class DivOp(BinaryOperator):
 
 class ModuloOp(BinaryOperator):
     """AST node: '%' operator"""
-    def __init__(self, left, right):
-        super(ModuloOp, self).__init__(truediv, left, right)
+    def __init__(self, left, right, **kwargs):
+        super(ModuloOp, self).__init__(truediv, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitModuloOp(self)
@@ -228,8 +247,8 @@ class ModuloOp(BinaryOperator):
 
 class ShiftLeftOp(BinaryOperator):
     """AST node: '<<' operator"""
-    def __init__(self, left, right):
-        super(ShiftLeftOp, self).__init__(truediv, left, right)
+    def __init__(self, left, right, **kwargs):
+        super(ShiftLeftOp, self).__init__(truediv, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitShiftLeftOp(self)
@@ -240,8 +259,8 @@ class ShiftLeftOp(BinaryOperator):
 
 class ShiftRightOp(BinaryOperator):
     """AST node: '>>' operator"""
-    def __init__(self, left, right):
-        super(ShiftRightOp, self).__init__(truediv, left, right)
+    def __init__(self, left, right, **kwargs):
+        super(ShiftRightOp, self).__init__(truediv, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitShiftRightOp(self)
@@ -251,8 +270,8 @@ class ShiftRightOp(BinaryOperator):
 
 
 class Identifier(Expression):
-    def __init__(self, name):
-        super(Identifier, self).__init__()
+    def __init__(self, name, **kwargs):
+        super(Identifier, self).__init__(**kwargs)
         self._name = name
 
     def accept(self, visitor):
@@ -266,12 +285,12 @@ class Identifier(Expression):
         return self._name
 
     def eval(self, symbol_table=None, next_byte=None):
-        return symbol_table.get_variable(self.name)
+        return symbol_table.get_variable(self)
 
 
 class Assignment(Node):
-    def __init__(self, lhs, rhs):
-        super(Assignment, self).__init__(children=[lhs, rhs])
+    def __init__(self, lhs, rhs, **kwargs):
+        super(Assignment, self).__init__(children=[lhs, rhs], **kwargs)
         self._lhs = lhs
         self._rhs = rhs
 
@@ -294,8 +313,8 @@ class Assignment(Node):
 
 
 class Macro(Node):
-    def __init__(self, name, arguments, body):
-        super(Macro, self).__init__(children=body)
+    def __init__(self, name, arguments, body, **kwargs):
+        super(Macro, self).__init__(children=body, **kwargs)
         self._name = name
         self._arguments = arguments
         self._body = body
@@ -324,8 +343,8 @@ class Macro(Node):
 
 
 class MacroInvocation(Node):
-    def __init__(self, name, parameters):
-        super(MacroInvocation, self).__init__(children=parameters)
+    def __init__(self, name, parameters, **kwargs):
+        super(MacroInvocation, self).__init__(children=parameters, **kwargs)
         self._name = name
         self._parameters = parameters
 
@@ -337,8 +356,8 @@ class MacroInvocation(Node):
 
 
 class Align(Node):
-    def __init__(self, expression):
-        super(Align, self).__init__(children=[expression])
+    def __init__(self, expression, **kwargs):
+        super(Align, self).__init__(children=[expression], **kwargs)
         self._expression = expression
 
     def accept(self, visitor):

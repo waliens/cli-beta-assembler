@@ -541,6 +541,7 @@ class BetaAssemblyParser ( Parser ):
             self.nodes = None
             self._expression = None # ExpressionContext
             self._assignment = None # AssignmentContext
+            self._ALIGN = None # Token
             self._non_expression = None # Non_expressionContext
             self._unary = None # UnaryContext
 
@@ -603,10 +604,10 @@ class BetaAssemblyParser ( Parser ):
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 99
-                self.match(BetaAssemblyParser.ALIGN)
+                localctx._ALIGN = self.match(BetaAssemblyParser.ALIGN)
                 self.state = 100
                 localctx._expression = self.expression(0)
-                localctx.nodes = [Align(localctx._expression.node)] 
+                localctx.nodes = [Align(localctx._expression.node, line=(0 if localctx._ALIGN is None else localctx._ALIGN.line), pos=(0 if localctx._ALIGN is None else localctx._ALIGN.column), source=self.current_file_path)] 
                 pass
 
             elif la_ == 4:
@@ -764,6 +765,7 @@ class BetaAssemblyParser ( Parser ):
             self.assign = None
             self._IDENTIFIER = None # Token
             self._assignment_rhs = None # Assignment_rhsContext
+            self._DOT = None # Token
 
         def IDENTIFIER(self):
             return self.getToken(BetaAssemblyParser.IDENTIFIER, 0)
@@ -809,7 +811,7 @@ class BetaAssemblyParser ( Parser ):
                 self.state = 127
                 localctx._assignment_rhs = self.assignment_rhs()
 
-                localctx.assign = Assignment(Identifier((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text)), localctx._assignment_rhs.node)
+                localctx.assign = Assignment(Identifier((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text), line=(0 if localctx._IDENTIFIER is None else localctx._IDENTIFIER.line), pos=(0 if localctx._IDENTIFIER is None else localctx._IDENTIFIER.column), source=self.current_file_path), localctx._assignment_rhs.node)
                 self.symbol_table.add_variable((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text))
 
                 pass
@@ -817,12 +819,12 @@ class BetaAssemblyParser ( Parser ):
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 130
-                self.match(BetaAssemblyParser.DOT)
+                localctx._DOT = self.match(BetaAssemblyParser.DOT)
                 self.state = 131
                 self.match(BetaAssemblyParser.EQUAL)
                 self.state = 132
                 localctx._assignment_rhs = self.assignment_rhs()
-                localctx.assign = Assignment(Dot(), localctx._assignment_rhs.node) 
+                localctx.assign = Assignment(Dot(line=(0 if localctx._DOT is None else localctx._DOT.line), pos=(0 if localctx._DOT is None else localctx._DOT.column), source=self.current_file_path), localctx._assignment_rhs.node) 
                 pass
 
             elif la_ == 3:
@@ -831,7 +833,7 @@ class BetaAssemblyParser ( Parser ):
                 localctx._IDENTIFIER = self.match(BetaAssemblyParser.IDENTIFIER)
                 self.state = 136
                 self.match(BetaAssemblyParser.T__0)
-                localctx.assign = Assignment((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text), Dot()) 
+                localctx.assign = Assignment(Identifier((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text), line=(0 if localctx._IDENTIFIER is None else localctx._IDENTIFIER.line), pos=(0 if localctx._IDENTIFIER is None else localctx._IDENTIFIER.column), source=self.current_file_path), Dot()) 
                 pass
 
 
@@ -915,7 +917,14 @@ class BetaAssemblyParser ( Parser ):
             self._expression = None # ExpressionContext
             self._atom = None # AtomContext
             self._unary = None # UnaryContext
+            self._MOD = None # Token
             self.b = None # ExpressionContext
+            self._MULT = None # Token
+            self._DIV = None # Token
+            self._PLUS = None # Token
+            self._MINUS = None # Token
+            self._SHL = None # Token
+            self._SHR = None # Token
 
         def expression(self, i:int=None):
             if i is None:
@@ -1026,10 +1035,10 @@ class BetaAssemblyParser ( Parser ):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 8)")
                         self.state = 165
-                        self.match(BetaAssemblyParser.MOD)
+                        localctx._MOD = self.match(BetaAssemblyParser.MOD)
                         self.state = 166
                         localctx.b = localctx._expression = self.expression(8)
-                        localctx.node = ModuloOp(localctx.a.node, localctx.b.node) 
+                        localctx.node = ModuloOp(localctx.a.node, localctx.b.node, line=(0 if localctx._MOD is None else localctx._MOD.line) , pos=(0 if localctx._MOD is None else localctx._MOD.column), source=self.current_file_path) 
                         pass
 
                     elif la_ == 2:
@@ -1041,10 +1050,10 @@ class BetaAssemblyParser ( Parser ):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 7)")
                         self.state = 170
-                        self.match(BetaAssemblyParser.MULT)
+                        localctx._MULT = self.match(BetaAssemblyParser.MULT)
                         self.state = 171
                         localctx.b = localctx._expression = self.expression(8)
-                        localctx.node = MultOp(localctx.a.node, localctx.b.node) 
+                        localctx.node = MultOp(localctx.a.node, localctx.b.node, line=(0 if localctx._MULT is None else localctx._MULT.line), pos=(0 if localctx._MULT is None else localctx._MULT.column), source=self.current_file_path) 
                         pass
 
                     elif la_ == 3:
@@ -1056,10 +1065,10 @@ class BetaAssemblyParser ( Parser ):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 6)")
                         self.state = 175
-                        self.match(BetaAssemblyParser.DIV)
+                        localctx._DIV = self.match(BetaAssemblyParser.DIV)
                         self.state = 176
                         localctx.b = localctx._expression = self.expression(7)
-                        localctx.node = DivOp(localctx.a.node, localctx.b.node) 
+                        localctx.node = DivOp(localctx.a.node, localctx.b.node, line=(0 if localctx._DIV is None else localctx._DIV.line), pos=(0 if localctx._DIV is None else localctx._DIV.column), source=self.current_file_path) 
                         pass
 
                     elif la_ == 4:
@@ -1071,10 +1080,10 @@ class BetaAssemblyParser ( Parser ):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 5)")
                         self.state = 180
-                        self.match(BetaAssemblyParser.PLUS)
+                        localctx._PLUS = self.match(BetaAssemblyParser.PLUS)
                         self.state = 181
                         localctx.b = localctx._expression = self.expression(6)
-                        localctx.node = PlusOp(localctx.a.node, localctx.b.node) 
+                        localctx.node = PlusOp(localctx.a.node, localctx.b.node, line=(0 if localctx._PLUS is None else localctx._PLUS.line), pos=(0 if localctx._PLUS is None else localctx._PLUS.column), source=self.current_file_path) 
                         pass
 
                     elif la_ == 5:
@@ -1086,10 +1095,10 @@ class BetaAssemblyParser ( Parser ):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 4)")
                         self.state = 185
-                        self.match(BetaAssemblyParser.MINUS)
+                        localctx._MINUS = self.match(BetaAssemblyParser.MINUS)
                         self.state = 186
                         localctx.b = localctx._expression = self.expression(5)
-                        localctx.node = MinusOp(localctx.a.node, localctx.b.node) 
+                        localctx.node = MinusOp(localctx.a.node, localctx.b.node, line=(0 if localctx._MINUS is None else localctx._MINUS.line), pos=(0 if localctx._MINUS is None else localctx._MINUS.column), source=self.current_file_path) 
                         pass
 
                     elif la_ == 6:
@@ -1101,10 +1110,10 @@ class BetaAssemblyParser ( Parser ):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 3)")
                         self.state = 190
-                        self.match(BetaAssemblyParser.SHL)
+                        localctx._SHL = self.match(BetaAssemblyParser.SHL)
                         self.state = 191
                         localctx.b = localctx._expression = self.expression(4)
-                        localctx.node = ShiftLeftOp(localctx.a.node, localctx.b.node) 
+                        localctx.node = ShiftLeftOp(localctx.a.node, localctx.b.node, line=(0 if localctx._SHL is None else localctx._SHL.line), pos=(0 if localctx._SHL is None else localctx._SHL.column), source=self.current_file_path) 
                         pass
 
                     elif la_ == 7:
@@ -1116,10 +1125,10 @@ class BetaAssemblyParser ( Parser ):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 2)")
                         self.state = 195
-                        self.match(BetaAssemblyParser.SHR)
+                        localctx._SHR = self.match(BetaAssemblyParser.SHR)
                         self.state = 196
                         localctx.b = localctx._expression = self.expression(3)
-                        localctx.node = ShiftRightOp(localctx.a.node, localctx.b.node) 
+                        localctx.node = ShiftRightOp(localctx.a.node, localctx.b.node, line=(0 if localctx._SHR is None else localctx._SHR.line), pos=(0 if localctx._SHR is None else localctx._SHR.column), source=self.current_file_path) 
                         pass
 
              
@@ -1144,6 +1153,7 @@ class BetaAssemblyParser ( Parser ):
             self._NB_BINARY = None # Token
             self._NB_HEXA = None # Token
             self._NB_DECIMAL = None # Token
+            self._DOT = None # Token
             self._IDENTIFIER = None # Token
 
         def NB_BINARY(self):
@@ -1187,31 +1197,31 @@ class BetaAssemblyParser ( Parser ):
                 self.enterOuterAlt(localctx, 1)
                 self.state = 204
                 localctx._NB_BINARY = self.match(BetaAssemblyParser.NB_BINARY)
-                localctx.a = Number(binary=(None if localctx._NB_BINARY is None else localctx._NB_BINARY.text)) 
+                localctx.a = Number(binary=(None if localctx._NB_BINARY is None else localctx._NB_BINARY.text), line=(0 if localctx._NB_BINARY is None else localctx._NB_BINARY.line), pos=(0 if localctx._NB_BINARY is None else localctx._NB_BINARY.column), source=self.current_file_path) 
                 pass
             elif token in [BetaAssemblyParser.NB_HEXA]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 206
                 localctx._NB_HEXA = self.match(BetaAssemblyParser.NB_HEXA)
-                localctx.a = Number(hexadecimal=(None if localctx._NB_HEXA is None else localctx._NB_HEXA.text)) 
+                localctx.a = Number(hexadecimal=(None if localctx._NB_HEXA is None else localctx._NB_HEXA.text), line=(0 if localctx._NB_HEXA is None else localctx._NB_HEXA.line), pos=(0 if localctx._NB_HEXA is None else localctx._NB_HEXA.column), source=self.current_file_path) 
                 pass
             elif token in [BetaAssemblyParser.NB_DECIMAL]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 208
                 localctx._NB_DECIMAL = self.match(BetaAssemblyParser.NB_DECIMAL)
-                localctx.a = Number(decimal=(None if localctx._NB_DECIMAL is None else localctx._NB_DECIMAL.text)) 
+                localctx.a = Number(decimal=(None if localctx._NB_DECIMAL is None else localctx._NB_DECIMAL.text), line=(0 if localctx._NB_DECIMAL is None else localctx._NB_DECIMAL.line), pos=(0 if localctx._NB_DECIMAL is None else localctx._NB_DECIMAL.column), source=self.current_file_path) 
                 pass
             elif token in [BetaAssemblyParser.DOT]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 210
-                self.match(BetaAssemblyParser.DOT)
-                localctx.a = Dot() 
+                localctx._DOT = self.match(BetaAssemblyParser.DOT)
+                localctx.a = Dot(line=(0 if localctx._DOT is None else localctx._DOT.line), pos=(0 if localctx._DOT is None else localctx._DOT.column), source=self.current_file_path) 
                 pass
             elif token in [BetaAssemblyParser.IDENTIFIER]:
                 self.enterOuterAlt(localctx, 5)
                 self.state = 212
                 localctx._IDENTIFIER = self.match(BetaAssemblyParser.IDENTIFIER)
-                localctx.a = Identifier((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text)) 
+                localctx.a = Identifier((None if localctx._IDENTIFIER is None else localctx._IDENTIFIER.text), line=(0 if localctx._IDENTIFIER is None else localctx._IDENTIFIER.line), pos=(0 if localctx._IDENTIFIER is None else localctx._IDENTIFIER.column), source=self.current_file_path) 
                 pass
             else:
                 raise NoViableAltException(self)
@@ -1230,7 +1240,9 @@ class BetaAssemblyParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
             self.node = None
+            self._MINUS = None # Token
             self._expression = None # ExpressionContext
+            self._COMPL = None # Token
 
         def MINUS(self):
             return self.getToken(BetaAssemblyParser.MINUS, 0)
@@ -1267,18 +1279,18 @@ class BetaAssemblyParser ( Parser ):
             if token in [BetaAssemblyParser.MINUS]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 216
-                self.match(BetaAssemblyParser.MINUS)
+                localctx._MINUS = self.match(BetaAssemblyParser.MINUS)
                 self.state = 217
                 localctx._expression = self.expression(0)
-                localctx.node = NegateOp(localctx._expression.node) 
+                localctx.node = NegateOp(localctx._expression.node, line=(0 if localctx._MINUS is None else localctx._MINUS.line), pos=(0 if localctx._MINUS is None else localctx._MINUS.column), source=self.current_file_path) 
                 pass
             elif token in [BetaAssemblyParser.COMPL]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 220
-                self.match(BetaAssemblyParser.COMPL)
+                localctx._COMPL = self.match(BetaAssemblyParser.COMPL)
                 self.state = 221
                 localctx._expression = self.expression(0)
-                localctx.node = BitwiseComplementOp(localctx._expression.node) 
+                localctx.node = BitwiseComplementOp(localctx._expression.node, line=(0 if localctx._COMPL is None else localctx._COMPL.line), pos=(0 if localctx._COMPL is None else localctx._COMPL.column), source=self.current_file_path) 
                 pass
             else:
                 raise NoViableAltException(self)
@@ -1297,6 +1309,7 @@ class BetaAssemblyParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
             self.macro = None
+            self._MACRO = None # Token
             self._macro_def_identifier = None # Macro_def_identifierContext
             self._macro_params = None # Macro_paramsContext
             self._beta_block = None # Beta_blockContext
@@ -1344,7 +1357,7 @@ class BetaAssemblyParser ( Parser ):
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 226
-            self.match(BetaAssemblyParser.MACRO)
+            localctx._MACRO = self.match(BetaAssemblyParser.MACRO)
             self.state = 227
             localctx._macro_def_identifier = self.macro_def_identifier()
             self.state = 228
@@ -1387,7 +1400,7 @@ class BetaAssemblyParser ( Parser ):
             self.match(BetaAssemblyParser.T__4)
 
             params = [] if localctx._macro_params is None else localctx._macro_params.params
-            localctx.macro = Macro(localctx._macro_def_identifier.name, params, localctx._beta_block.nodes)
+            localctx.macro = Macro(localctx._macro_def_identifier.name, params, localctx._beta_block.nodes, line=(0 if localctx._MACRO is None else localctx._MACRO.line), pos=(0 if localctx._MACRO is None else localctx._MACRO.column), source=self.current_file_path)
             self.symbol_table.add_macro(localctx._macro_def_identifier.name)
 
         except RecognitionException as re:
@@ -1526,6 +1539,7 @@ class BetaAssemblyParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
             self.macro = None
+            self._MACRO = None # Token
             self._macro_def_identifier = None # Macro_def_identifierContext
             self._macro_params = None # Macro_paramsContext
             self._unary = None # UnaryContext
@@ -1572,7 +1586,7 @@ class BetaAssemblyParser ( Parser ):
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 263
-            self.match(BetaAssemblyParser.MACRO)
+            localctx._MACRO = self.match(BetaAssemblyParser.MACRO)
             self.state = 264
             localctx._macro_def_identifier = self.macro_def_identifier()
             self.state = 265
@@ -1603,7 +1617,7 @@ class BetaAssemblyParser ( Parser ):
                 nodes.append(localctx._unary.node)
             nodes.extend(localctx._beta_items_inline.nodes)
             params = [] if localctx._macro_params is None else localctx._macro_params.params
-            localctx.macro = Macro(localctx._macro_def_identifier.name, params, nodes)
+            localctx.macro = Macro(localctx._macro_def_identifier.name, params, nodes, line=(0 if localctx._MACRO is None else localctx._MACRO.line), pos=(0 if localctx._MACRO is None else localctx._MACRO.column), source=self.current_file_path)
             self.symbol_table.add_macro(localctx._macro_def_identifier.name)
 
         except RecognitionException as re:
@@ -1802,7 +1816,7 @@ class BetaAssemblyParser ( Parser ):
             self.match(BetaAssemblyParser.T__2)
 
             params = [] if localctx._macro_call_params is None else localctx._macro_call_params.params
-            localctx.call = MacroInvocation((None if localctx._MACRO_ID is None else localctx._MACRO_ID.text), params)
+            localctx.call = MacroInvocation((None if localctx._MACRO_ID is None else localctx._MACRO_ID.text), params, line=(0 if localctx._MACRO_ID is None else localctx._MACRO_ID.line), pos=(0 if localctx._MACRO_ID is None else localctx._MACRO_ID.column), source=self.current_file_path)
 
         except RecognitionException as re:
             localctx.exception = re

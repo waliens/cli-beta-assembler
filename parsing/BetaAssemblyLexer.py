@@ -168,13 +168,6 @@ class BetaAssemblyLexer(Lexer):
         self._predicates = None
 
 
-    def nextToken(self):
-        token = super().nextToken()
-        if token.type != 17:
-            print("Token: {} [{}] [{}]".format(self.ruleNames[token.type - 1], token.type, token.text))
-        return token
-
-
     def action(self, localctx:RuleContext, ruleIndex:int, actionIndex:int):
         if self._actions is None:
             actions = dict()

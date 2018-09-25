@@ -1,6 +1,7 @@
 from _ast import Expression
 
-from parsing.nodes import Macro, Assignment
+from parsing.nodes import Macro, Identifier
+from semantic.exceptions import IdentifierUnknownError
 
 
 class SymbolTables(object):
@@ -19,5 +20,10 @@ class SymbolTables(object):
         """Value is an integer value"""
         self._variables[variable] = value
 
-    def get_variable(self, variable: str):
-        return self._variables[variable]
+    def get_variable(self, variable: Identifier):
+        try:
+            return self._variables[variable.name]
+        except KeyError:
+            raise IdentifierUnknownError(variable)
+
+
