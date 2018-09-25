@@ -1400,7 +1400,7 @@ class BetaAssemblyParser ( Parser ):
             self.match(BetaAssemblyParser.T__4)
 
             params = [] if localctx._macro_params is None else localctx._macro_params.params
-            localctx.macro = Macro(localctx._macro_def_identifier.name, params, localctx._beta_block.nodes, line=(0 if localctx._MACRO is None else localctx._MACRO.line), pos=(0 if localctx._MACRO is None else localctx._MACRO.column), source=self.current_file_path)
+            localctx.macro = Macro(localctx._macro_def_identifier.name, params, BetaTree(localctx._beta_block.nodes), line=(0 if localctx._MACRO is None else localctx._MACRO.line), pos=(0 if localctx._MACRO is None else localctx._MACRO.column), source=self.current_file_path)
             self.symbol_table.add_macro(localctx._macro_def_identifier.name)
 
         except RecognitionException as re:
@@ -1617,7 +1617,7 @@ class BetaAssemblyParser ( Parser ):
                 nodes.append(localctx._unary.node)
             nodes.extend(localctx._beta_items_inline.nodes)
             params = [] if localctx._macro_params is None else localctx._macro_params.params
-            localctx.macro = Macro(localctx._macro_def_identifier.name, params, nodes, line=(0 if localctx._MACRO is None else localctx._MACRO.line), pos=(0 if localctx._MACRO is None else localctx._MACRO.column), source=self.current_file_path)
+            localctx.macro = Macro(localctx._macro_def_identifier.name, params, BetaTree(nodes), line=(0 if localctx._MACRO is None else localctx._MACRO.line), pos=(0 if localctx._MACRO is None else localctx._MACRO.column), source=self.current_file_path)
             self.symbol_table.add_macro(localctx._macro_def_identifier.name)
 
         except RecognitionException as re:

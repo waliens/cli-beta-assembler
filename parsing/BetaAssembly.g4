@@ -154,7 +154,7 @@ unary returns[Node node]
 multiline_macro returns[Macro macro]
     : MACRO macro_def_identifier '(' macro_params? ')' '{' NEWLINE* beta_block NEWLINE* '}' {
 params = [] if $macro_params.ctx is None else $macro_params.params
-$macro = Macro($macro_def_identifier.name, params, $beta_block.nodes, line=$MACRO.line, pos=$MACRO.pos, source=self.current_file_path)
+$macro = Macro($macro_def_identifier.name, params, BetaTree($beta_block.nodes), line=$MACRO.line, pos=$MACRO.pos, source=self.current_file_path)
 self.symbol_table.add_macro($macro_def_identifier.name)
 }
 ;
@@ -179,7 +179,7 @@ if $unary.ctx is not None:
     nodes.append($unary.node)
 nodes.extend($beta_items_inline.nodes)
 params = [] if $macro_params.ctx is None else $macro_params.params
-$macro = Macro($macro_def_identifier.name, params, nodes, line=$MACRO.line, pos=$MACRO.pos, source=self.current_file_path)
+$macro = Macro($macro_def_identifier.name, params, BetaTree(nodes), line=$MACRO.line, pos=$MACRO.pos, source=self.current_file_path)
 self.symbol_table.add_macro($macro_def_identifier.name)
 }
 ;

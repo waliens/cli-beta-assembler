@@ -13,13 +13,12 @@ class BetaAssembler(object):
     def _reset(self):
         self._parser = None
         self._syntax_tree = None
-        self._symbol_tables = SymbolTables()
-        self._resolver_visitor = ResolverVisitor(self._symbol_tables)
+        self._resolver_visitor = ResolverVisitor()
 
     def assemble(self):
         self._parse()
         self._resolve()
-        print(self._symbol_tables)
+        print(self.symbol_tables)
         print(self._resolver_visitor.bytes)
 
     def _parse(self):

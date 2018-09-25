@@ -71,13 +71,13 @@ a-(1) (2+a) 2+(a-2)
         macro = tree.children[0]
         self.assertIsInstance(macro, Macro)
         self.assertEqual("ADD", macro.name)
-        self.assertEqual(3, len(macro.arguments))
-        self.assertEqual("a", macro.arguments[0].name)
-        self.assertEqual("b", macro.arguments[1].name)
-        self.assertEqual("c", macro.arguments[2].name)
+        self.assertEqual(3, len(macro.parameters))
+        self.assertEqual("a", macro.parameters[0].name)
+        self.assertEqual("b", macro.parameters[1].name)
+        self.assertEqual("c", macro.parameters[2].name)
         self.assertEqual(1, len(macro.body))
-        self.assertIsInstance(macro.body[0], Number)
-        self.assertEqual(macro.body[0].value, 0)
+        self.assertIsInstance(macro.body.children[0], Number)
+        self.assertEqual(macro.body.children[0].value, 0)
 
     def testSimpleMacroAndUnary(self):
         tree = self._parse(""".macro ADD(a,b,c) { 0x0 } -1""")
@@ -92,15 +92,15 @@ a = 2 b = 3
 }""")
         macro = tree.children[0]
         self.assertEqual("ADD", macro.name)
-        self.assertEqual(3, len(macro.arguments))
-        self.assertEqual("a", macro.arguments[0].name)
-        self.assertEqual("b", macro.arguments[1].name)
-        self.assertEqual("c", macro.arguments[2].name)
+        self.assertEqual(3, len(macro.parameters))
+        self.assertEqual("a", macro.parameters[0].name)
+        self.assertEqual("b", macro.parameters[1].name)
+        self.assertEqual("c", macro.parameters[2].name)
         self.assertEqual(4, len(macro.body))
-        self.assertIsInstance(macro.body[0], PlusOp)
-        self.assertIsInstance(macro.body[1], MultOp)
-        self.assertIsInstance(macro.body[2], Assignment)
-        self.assertIsInstance(macro.body[3], Assignment)
+        self.assertIsInstance(macro.body.children[0], PlusOp)
+        self.assertIsInstance(macro.body.children[1], MultOp)
+        self.assertIsInstance(macro.body.children[2], Assignment)
+        self.assertIsInstance(macro.body.children[3], Assignment)
 
         with self.assertRaises(BetaAssemblySyntaxError, msg="Block macro's first brace must be inline with the macro."):
             self._parse(""".macro ADD(a,b,c) 
@@ -110,7 +110,7 @@ a = 2 b = 3
         tree = self._parse(""".macro A() { 1 2 3 }""")
         macro = tree.children[0]
         self.assertEqual("A", macro.name)
-        self.assertEqual(0, len(macro.arguments))
+        self.assertEqual(0, len(macro.parameters))
         self.assertEqual(3, len(macro.body))
 
     def testMacroInline(self):
@@ -123,15 +123,15 @@ a = 2 b = 3
         macro1 = tree.children[0]
         self.assertIsInstance(macro1, Macro)
         self.assertEqual("ADD", macro1.name)
-        self.assertEqual(1, len(macro1.arguments))
-        self.assertEqual("a", macro1.arguments[0].name)
+        self.assertEqual(1, len(macro1.parameters))
+        self.assertEqual("a", macro1.parameters[0].name)
         self.assertEqual(3, len(macro1.body))
 
         macro2 = tree.children[1]
         self.assertIsInstance(macro2, Macro)
         self.assertEqual("SUB", macro2.name)
-        self.assertEqual(1, len(macro2.arguments))
-        self.assertEqual("b", macro2.arguments[0].name)
+        self.assertEqual(1, len(macro2.parameters))
+        self.assertEqual("b", macro2.parameters[0].name)
         self.assertEqual(4, len(macro2.body))
 
     def testMacroInlineWithEOF(self):
@@ -140,8 +140,8 @@ a = 2 b = 3
         macro = tree.children[0]
         self.assertIsInstance(macro, Macro)
         self.assertEqual("ADD", macro.name)
-        self.assertEqual(1, len(macro.arguments))
-        self.assertEqual("a", macro.arguments[0].name)
+        self.assertEqual(1, len(macro.parameters))
+        self.assertEqual("a", macro.parameters[0].name)
         self.assertEqual(3, len(macro.body))
 
     def testMacroCall(self):

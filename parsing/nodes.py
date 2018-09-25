@@ -37,13 +37,15 @@ class Node(metaclass=ABCMeta):
 class BetaTree(Node):
     def __init__(self, nodes, **kwargs):
         super(BetaTree, self).__init__(nodes, **kwargs)
-        self._nodes = nodes
 
     def accept(self, visitor):
         visitor.visitBetaTree(self)
 
+    def __len__(self):
+        return len(self._children)
+
     def __str__(self):
-        return "Beta:\n{}".format("\n".join([str(n) for n in self._nodes]))
+        return "Beta:\n{}".format("\n".join([str(n) for n in self._children]))
 
 
 class Expression(Node, metaclass=ABCMeta):
@@ -313,29 +315,29 @@ class Assignment(Node):
 
 
 class Macro(Node):
-    def __init__(self, name, arguments, body, **kwargs):
+    def __init__(self, name, parameters, body, **kwargs):
         super(Macro, self).__init__(children=body, **kwargs)
         self._name = name
-        self._arguments = arguments
+        self._parameters = parameters
         self._body = body
 
     def accept(self, visitor):
         visitor.visitMacro(self)
 
     def __str__(self):
-        return ".macro {}({}) <- {}".format(self._name, ", ".join([str(a) for a in self._arguments]), [str(n) for n in self._body])
+        return ".macro {}({}) <- {}".format(self._name, ", ".join([str(a) for a in self._parameters]), [str(n) for n in self._body])
 
     @property
     def name(self):
         return self._name
 
     @property
-    def args(self):
-        return self._arguments
+    def params(self):
+        return self._parameters
 
     @property
-    def arguments(self):
-        return self._arguments
+    def parameters(self):
+        return self._parameters
 
     @property
     def body(self):
@@ -343,16 +345,24 @@ class Macro(Node):
 
 
 class MacroInvocation(Node):
-    def __init__(self, name, parameters, **kwargs):
-        super(MacroInvocation, self).__init__(children=parameters, **kwargs)
+    def __init__(self, name, arguments, **kwargs):
+        super(MacroInvocation, self).__init__(children=arguments, **kwargs)
         self._name = name
-        self._parameters = parameters
+        self._arguments = arguments
 
     def accept(self, visitor):
         visitor.visitMacroInvocation(self)
 
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def arguments(self):
+        return self._arguments
+
     def __str__(self):
-        return "{}({})".format(self._name, ", ".join([str(p) for p in self._parameters]))
+        return "{}({})".format(self._name, ", ".join([str(p) for p in self._arguments]))
 
 
 class Align(Node):
