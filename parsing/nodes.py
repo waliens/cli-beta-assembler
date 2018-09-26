@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
-from operator import add, sub, mul, truediv, neg, inv
+from copy import copy
+from operator import add, sub, mul, floordiv, neg, inv, lshift, rshift, mod
 
 
 class Node(metaclass=ABCMeta):
@@ -12,6 +13,10 @@ class Node(metaclass=ABCMeta):
     @property
     def children(self):
         return self._children
+
+    @children.setter
+    def children(self, new_children):
+        self._children = new_children
 
     @abstractmethod
     def accept(self, visitor):
@@ -32,6 +37,9 @@ class Node(metaclass=ABCMeta):
     @property
     def pos(self):
         return self._pos
+
+    def __repr__(self):
+        return str(self)
 
 
 class BetaTree(Node):
@@ -95,7 +103,38 @@ class Number(Atom):
         return self.value
 
     def simplify(self, symbol_table=None, next_byte=None):
-        return self
+        return copy(self)
+
+
+class Identifier(Atom):
+    def __init__(self, name, **kwargs):
+        super(Identifier, self).__init__(**kwargs)
+        self._name = name
+
+    def accept(self, visitor):
+        visitor.visitIdentifier(self)
+
+    def __str__(self):
+        return "{}".format(self._name)
+
+    @property
+    def name(self):
+        return self._name
+
+    def eval(self, symbol_table=None, next_byte=None):
+        if symbol_table is None:
+            raise AssertionError("Missing symbol table when evaluating identifier")
+        node = symbol_table.get_variable(self)
+        if not isinstance(node, Number):
+            from semantic.exceptions import UnresolvedIdentifierError
+            raise UnresolvedIdentifierError(self, node)
+        return node.value
+
+    def simplify(self, symbol_table=None, next_byte=None):
+        if symbol_table is None or not symbol_table.has_variable(self.name):
+            return self
+        else:
+            return symbol_table.get_variable(self)
 
 
 class Dot(Atom):
@@ -113,10 +152,12 @@ class Dot(Atom):
         return str(self)
 
     def eval(self, symbol_table=None, next_byte=None):
+        if next_byte is None:
+            raise AssertionError("Missing next_byte when evaluating '.'.")
         return next_byte
 
     def simplify(self, symbol_table=None, next_byte=None):
-        return Number(number=next_byte) if next_byte is not None else self
+        return Number(number=self.eval(symbol_table, next_byte)) if next_byte is not None else self
 
 
 class UnaryOperator(Expression, metaclass=ABCMeta):
@@ -140,12 +181,21 @@ class UnaryOperator(Expression, metaclass=ABCMeta):
     def op(self):
         return self._op
 
+    @property
+    def expr(self):
+        return self._expr
+
     def eval(self, symbol_table=None, next_byte=None):
-        return self._op(self._expr.eval(symbol_table=symbol_table))
+        return self._op(self._expr.eval(symbol_table=symbol_table, next_byte=next_byte))
 
     def simplify(self, symbol_table=None, next_byte=None):
-        self._expr = self._expr.simplify(symbol_table=symbol_table, next_byte=next_byte)
-        return self
+        new_op = copy(self)
+        new_op._expr = new_op.expr.simplify(symbol_table=symbol_table, next_byte=next_byte)
+
+        if isinstance(new_op.expr, Number):
+            return Number(number=new_op.eval())
+        else:
+            return new_op
 
 
 class NegateOp(UnaryOperator):
@@ -194,18 +244,29 @@ class BinaryOperator(Expression, metaclass=ABCMeta):
     def op(self):
         return self._op
 
+    @property
+    def left(self):
+        return self._left
+
+    @property
+    def right(self):
+        return self._right
+
     def eval(self, symbol_table=None, next_byte=None):
         return self._op(
-            self._left.eval(symbol_table=symbol_table),
-            self._right.eval(symbol_table=symbol_table)
+            self._left.eval(symbol_table=symbol_table, next_byte=next_byte),
+            self._right.eval(symbol_table=symbol_table, next_byte=next_byte)
         )
 
     def simplify(self, symbol_table=None, next_byte=None):
-        self._left = self._left.simplify(symbol_table=symbol_table, next_byte=next_byte)
-        self._right = self._right.simplify(symbol_table=symbol_table, next_byte=next_byte)
-        if isinstance(self._left, Number) and isinstance(self._right, Number):
-            return Number(number=self._op(self._left.eval(), self._right.eval()))
-        return self
+        new_op = copy(self)
+        new_op._left = new_op._left.simplify(symbol_table=symbol_table, next_byte=next_byte)
+        new_op._right = new_op._right.simplify(symbol_table=symbol_table, next_byte=next_byte)
+
+        if isinstance(new_op.left, Number) and isinstance(new_op.right, Number):
+            return Number(number=new_op.eval(symbol_table, next_byte))
+        else:
+            return new_op
 
 
 class PlusOp(BinaryOperator):
@@ -247,7 +308,7 @@ class MultOp(BinaryOperator):
 class DivOp(BinaryOperator):
     """AST node: '/' operator"""
     def __init__(self, left, right, **kwargs):
-        super(DivOp, self).__init__(truediv, left, right, **kwargs)
+        super(DivOp, self).__init__(floordiv, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitDivOp(self)
@@ -259,7 +320,7 @@ class DivOp(BinaryOperator):
 class ModuloOp(BinaryOperator):
     """AST node: '%' operator"""
     def __init__(self, left, right, **kwargs):
-        super(ModuloOp, self).__init__(truediv, left, right, **kwargs)
+        super(ModuloOp, self).__init__(mod, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitModuloOp(self)
@@ -271,7 +332,7 @@ class ModuloOp(BinaryOperator):
 class ShiftLeftOp(BinaryOperator):
     """AST node: '<<' operator"""
     def __init__(self, left, right, **kwargs):
-        super(ShiftLeftOp, self).__init__(truediv, left, right, **kwargs)
+        super(ShiftLeftOp, self).__init__(lshift, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitShiftLeftOp(self)
@@ -283,38 +344,13 @@ class ShiftLeftOp(BinaryOperator):
 class ShiftRightOp(BinaryOperator):
     """AST node: '>>' operator"""
     def __init__(self, left, right, **kwargs):
-        super(ShiftRightOp, self).__init__(truediv, left, right, **kwargs)
+        super(ShiftRightOp, self).__init__(rshift, left, right, **kwargs)
 
     def accept(self, visitor):
         visitor.visitShiftRightOp(self)
 
     def str_op(self):
         return ">>"
-
-
-class Identifier(Expression):
-    def __init__(self, name, **kwargs):
-        super(Identifier, self).__init__(**kwargs)
-        self._name = name
-
-    def accept(self, visitor):
-        visitor.visitIdentifier(self)
-
-    def __str__(self):
-        return "{}".format(self._name)
-
-    @property
-    def name(self):
-        return self._name
-
-    def eval(self, symbol_table=None, next_byte=None):
-        return symbol_table.get_variable(self)
-
-    def simplify(self, symbol_table=None, next_byte=None):
-        if symbol_table is None or not symbol_table.has_variable(self.name):
-            return self
-        else:
-            return Number(number=symbol_table.get_variable(self))
 
 
 class Assignment(Node):
@@ -367,7 +403,15 @@ class Macro(Node):
         visitor.visitMacro(self)
 
     def __str__(self):
-        return ".macro {}({}) <- {}".format(self._name, ", ".join([str(a) for a in self._parameters]), [str(n) for n in self._body])
+        return ".macro {}({}) <- [ {}{} ]".format(
+            self._name,
+            ", ".join([str(a) for a in self._parameters]),
+            "; ".join([str(n) for n in self._body.children[:3]]),
+            "" if len(self._body) <= 3 else "..."
+        )
+
+    def key(self):
+        return self.name, len(self.parameters)
 
     @property
     def name(self):
@@ -407,6 +451,9 @@ class MacroInvocation(Node):
     def name(self):
         return self._name
 
+    def key(self):
+        return self.name, len(self.arguments)
+
     @property
     def arguments(self):
         return self._arguments
@@ -422,6 +469,10 @@ class Align(Node):
 
     def accept(self, visitor):
         visitor.visitAlign(self)
+
+    @property
+    def expression(self):
+        return self._expression
 
     def __str__(self):
         return ".align {}".format(str(self._expression))

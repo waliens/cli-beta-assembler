@@ -1,8 +1,6 @@
-from parsing.BetaAssemblyParser import BetaAssemblyParser
-from parsing.exceptions import BetaAssemblyError
+
 from parsing.parse_util import parse_file
-from semantic.resolver import ResolverVisitor, Macro
-from semantic.symbol_visitor import SymbolTableVisitor
+from semantic.resolver import ByteGenerator
 
 
 class BetaAssembler(object):
@@ -13,16 +11,13 @@ class BetaAssembler(object):
     def _reset(self):
         self._parser = None
         self._syntax_tree = None
-        self._symbol_tables_visitor = SymbolTableVisitor()
-        self._resolver_visitor = ResolverVisitor()
+        self._generator = ByteGenerator()
 
     def assemble(self):
         self._parse()
-        self._syntax_tree.accept(self._symbol_tables_visitor)
-        # self._resolve()
-        print(self._symbol_tables_visitor.identifier_table._identifiers)
-        print(self._symbol_tables_visitor.macro_table._macros)
-        print(self._resolver_visitor.bytes)
+        bytes = self._generator.generate(self._syntax_tree)
+        print(self._generator._identifier_table.identifiers)
+        print(self._generator._macro_table.macros)
 
     def _parse(self):
         self._syntax_tree, _ = parse_file(
@@ -30,9 +25,7 @@ class BetaAssembler(object):
             parsed_files=[self._filepath]
         )
 
-    def _resolve(self):
-        self._syntax_tree.accept(self._resolver_visitor)
 
-    def simply_macro(self, macro: Macro):
+
 
 
