@@ -1,34 +1,12 @@
 from parsing.nodes import *
-from semantic.exceptions import UnknownIdentifierError, UnresolvedIdentifierError
-from semantic.symbol_tables import MacroTable, IdentifierTable
+from assembler.exceptions import UnknownIdentifierError, UnresolvedIdentifierError
+from assembler.symbol_tables import MacroTable, IdentifierTable
+from parsing.parse_util import parse_file
 
 
-# class DependencyNode(object):
-#     def __init__(self, name, loc, expr=None):
-#         self._name = name
-#         self._expr = expr
-#         self._loc = loc
-#
-#     @property
-#     def name(self):
-#         return self._name
-#
-#     @property
-#     def expr(self):
-#         return self._expr
-#
-#
-# class DependencyGraph(object):
-#     def __init__(self):
-#         self._nodes = dict()
-#         self._depends_on = dict()  # if node1 depends on node2, there is a directed edge between node1 and node2
-#         self._is_depen = dict()  # if node1 depends on node2, there is a directed edge between node2 and node1
-#
-#     def add_node(self, node, depends):
-#         self._nodes[node.name] = node
-#         for d in depends:
-#             self._depends_on[node] = self._depends_on.get(node, []) + [d]
-#             self._is_depen[d] = self._is_depen.get(d, []) + [node]
+def assemble(filepath):
+    tree, _ = parse_file(filepath, parsed_files=[filepath])
+    return ByteGenerator().generate(tree)
 
 
 class ByteGenerator(object):

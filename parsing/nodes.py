@@ -126,7 +126,7 @@ class Identifier(Atom):
             raise AssertionError("Missing symbol table when evaluating identifier")
         node = symbol_table.get_variable(self)
         if not isinstance(node, Number):
-            from semantic.exceptions import UnresolvedIdentifierError
+            from assembler.exceptions import UnresolvedIdentifierError
             raise UnresolvedIdentifierError(self, node)
         return node.value
 
