@@ -38,6 +38,7 @@ class ByteGenerator(object):
         self._next_byte = 0
         self._bytes = list()
         self._bytes_to_resolve = dict()
+        self._breakpoints = set()
 
     @property
     def bytes(self):
@@ -71,6 +72,8 @@ class ByteGenerator(object):
             return self.resolveAssignment(node)
         elif isinstance(node, Align):
             return self.resolveAlign(node)
+        elif isinstance(node, Breakpoint):
+            return self.resolveBreakpoint()
         else:
             raise ValueError("Unknown node '{}'".format(node))
 
@@ -116,4 +119,9 @@ class ByteGenerator(object):
         if self._next_byte % value != 0:
             self._next_byte += value - (self._next_byte % value)
         return []  # do not produce bytes
+
+    def resolveBreakpoint(self):
+        self._breakpoints.add(self._next_byte)
+        return []  # do not produce bytes
+
 
