@@ -6,7 +6,7 @@ options { language=Python3; }
 
 @header {
 import os
-from .nodes import BetaTree, Node, Align, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
+from .nodes import BetaTree, Node, Align, Breakpoint, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
 from .exceptions import IncludeFileNotFoundError, CircularInclusionError
 }
 
@@ -83,6 +83,7 @@ non_expression returns[list nodes]
     : multiline_macro              {$nodes = [$multiline_macro.macro] }
       | macro_call                 {$nodes = [$macro_call.call] }
       | inline_macro (NEWLINE|EOF) {$nodes = [$inline_macro.macro] }
+      | BREAKPOINT                 {$nodes = [Breakpoint(line=$BREAKPOINT.line, pos=$BREAKPOINT.pos, source=self.current_file_path)] }
       | INCLUDE                    {
 from .parse_util import parse_file
 filepath = $INCLUDE.text[8:].strip()
@@ -224,7 +225,8 @@ macro_param returns[Node node]
 COMMENT   : '|' ~[\r\n]* -> skip;
 INCLUDE   : '.include' [ \t\f]+ ~[ \n\r\f\t]+ ;
 MACRO     : '.macro' ;
-ALIGN     : '.align';
+ALIGN     : '.align' ;
+BREAKPOINT: '.breakpoint' ;
 IDENTIFIER: [a-zA-Z][a-zA-Z0-9_]* {
 val = self.text
 if self.symbol_table.has_macro(val):

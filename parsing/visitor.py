@@ -62,3 +62,6 @@ class BetaAssemblyVisitor(object):
 
     def visitAlign(self, node: Align):
         self._visitChildren(node)
+
+    def visitBreakpoint(self, node: Breakpoint):
+        self._visitChildren(node)

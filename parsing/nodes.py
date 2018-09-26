@@ -476,3 +476,14 @@ class Align(Node):
 
     def __str__(self):
         return ".align {}".format(str(self._expression))
+
+
+class Breakpoint(Node):
+    def __init__(self, **kwargs):
+        super(Breakpoint, self).__init__(children=[], **kwargs)
+
+    def accept(self, visitor):
+        visitor.visitBreakpoint()
+
+    def __str__(self):
+        return ".breakpoint"
