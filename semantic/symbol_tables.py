@@ -1,13 +1,28 @@
-from _ast import Expression
-
 from parsing.nodes import Macro, Identifier, MacroInvocation
 from semantic.exceptions import IdentifierUnknownError, MacroUnknownError
 
 
-class SymbolTables(object):
-    def __init__(self, variables=None, macros=None):
+class IdentifierTable(object):
+    def __init__(self, identifiers=None):
+        self._identifiers = dict() if identifiers is None else identifiers
+
+    def add_identifier(self, variable: str, value):
+        """Value is an integer value"""
+        self._identifiers[variable] = value
+
+    def get_variable(self, variable: Identifier):
+        try:
+            return self._identifiers[variable.name]
+        except KeyError:
+            raise IdentifierUnknownError(variable)
+
+    def has_variable(self, name: str):
+        return name in self._identifiers
+
+
+class MacroTable(object):
+    def __init__(self, macros=None):
         self._macros = dict() if macros is None else macros
-        self._variables = dict() if variables is None else variables
 
     @classmethod
     def _macro_key(cls, name, nargs):
@@ -30,15 +45,3 @@ class SymbolTables(object):
         except KeyError:
             raise MacroUnknownError(invocation)
 
-    def add_variable(self, variable: str, value):
-        """Value is an integer value"""
-        self._variables[variable] = value
-
-    def get_variable(self, variable: Identifier):
-        try:
-            return self._variables[variable.name]
-        except KeyError:
-            raise IdentifierUnknownError(variable)
-
-    def clone_table(self):
-        return SymbolTables(variables=self._variables.copy(), macros=self._macros.copy())

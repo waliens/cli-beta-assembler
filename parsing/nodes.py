@@ -56,6 +56,10 @@ class Expression(Node, metaclass=ABCMeta):
     def eval(self, symbol_table=None, next_byte=None):
         pass
 
+    @abstractmethod
+    def simplify(self, symbol_table=None, next_byte=None):
+        pass
+
 
 class Atom(Expression, metaclass=ABCMeta):
     def __init__(self, children=None, **kwargs):
@@ -63,9 +67,9 @@ class Atom(Expression, metaclass=ABCMeta):
 
 
 class Number(Atom):
-    def __init__(self, hexadecimal=None, decimal=None, binary=None, **kwargs):
+    def __init__(self, number=None, hexadecimal=None, decimal=None, binary=None, **kwargs):
         super(Number, self).__init__(children=None, **kwargs)
-        self._value = self._parse(hexa=hexadecimal, deci=decimal, bina=binary)
+        self._value = self._parse(hexa=hexadecimal, deci=decimal, bina=binary) if number is None else number
 
     @staticmethod
     def _parse(hexa, deci, bina):
@@ -90,6 +94,9 @@ class Number(Atom):
     def eval(self, symbol_table=None, next_byte=None):
         return self.value
 
+    def simplify(self, symbol_table=None, next_byte=None):
+        return self
+
 
 class Dot(Atom):
     def __init__(self, **kwargs):
@@ -107,6 +114,9 @@ class Dot(Atom):
 
     def eval(self, symbol_table=None, next_byte=None):
         return next_byte
+
+    def simplify(self, symbol_table=None, next_byte=None):
+        return Number(number=next_byte) if next_byte is not None else self
 
 
 class UnaryOperator(Expression, metaclass=ABCMeta):
@@ -132,6 +142,10 @@ class UnaryOperator(Expression, metaclass=ABCMeta):
 
     def eval(self, symbol_table=None, next_byte=None):
         return self._op(self._expr.eval(symbol_table=symbol_table))
+
+    def simplify(self, symbol_table=None, next_byte=None):
+        self._expr = self._expr.simplify(symbol_table=symbol_table, next_byte=next_byte)
+        return self
 
 
 class NegateOp(UnaryOperator):
@@ -185,6 +199,13 @@ class BinaryOperator(Expression, metaclass=ABCMeta):
             self._left.eval(symbol_table=symbol_table),
             self._right.eval(symbol_table=symbol_table)
         )
+
+    def simplify(self, symbol_table=None, next_byte=None):
+        self._left = self._left.simplify(symbol_table=symbol_table, next_byte=next_byte)
+        self._right = self._right.simplify(symbol_table=symbol_table, next_byte=next_byte)
+        if isinstance(self._left, Number) and isinstance(self._right, Number):
+            return Number(number=self._op(self._left.eval(), self._right.eval()))
+        return self
 
 
 class PlusOp(BinaryOperator):
@@ -289,12 +310,19 @@ class Identifier(Expression):
     def eval(self, symbol_table=None, next_byte=None):
         return symbol_table.get_variable(self)
 
+    def simplify(self, symbol_table=None, next_byte=None):
+        if symbol_table is None or not symbol_table.has_variable(self.name):
+            return self
+        else:
+            return Number(number=symbol_table.get_variable(self))
+
 
 class Assignment(Node):
     def __init__(self, lhs, rhs, **kwargs):
         super(Assignment, self).__init__(children=[lhs, rhs], **kwargs)
         self._lhs = lhs
         self._rhs = rhs
+        self._registered = False  # whether was read and value was inserted in the table
 
     def accept(self, visitor):
         visitor.visitAssignment(self)
@@ -313,6 +341,19 @@ class Assignment(Node):
     def rhs(self):
         return self._rhs
 
+    @rhs.setter
+    def rhs(self, rhs):
+        self._rhs = rhs
+        self.children[1] = rhs
+
+    @property
+    def registered(self):
+        return self._registered
+
+    @registered.setter
+    def registered(self, registered):
+        self._registered = registered
+
 
 class Macro(Node):
     def __init__(self, name, parameters, body, **kwargs):
@@ -320,6 +361,7 @@ class Macro(Node):
         self._name = name
         self._parameters = parameters
         self._body = body
+        self._simplified = False
 
     def accept(self, visitor):
         visitor.visitMacro(self)
@@ -342,6 +384,14 @@ class Macro(Node):
     @property
     def body(self):
         return self._body
+
+    @property
+    def simplified(self):
+        return self._simplified
+
+    @simplified.setter
+    def simplified(self, simplified):
+        self._simplified = simplified
 
 
 class MacroInvocation(Node):

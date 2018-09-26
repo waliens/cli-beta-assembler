@@ -1,13 +1,13 @@
 from parsing import BetaAssemblyVisitor
 from parsing.nodes import *
-from semantic.SymbolTable import SymbolTables
+from semantic.symbol_tables import IdentifierTable
 
 
 class ResolverVisitor(BetaAssemblyVisitor):
     """Resolves expression"""
     def __init__(self):
         super(ResolverVisitor, self).__init__()
-        self._symbol_tables_stack = list([SymbolTables()])
+        self._symbol_tables_stack = list([IdentifierTable()])
         self._next_byte = 0
         self._bytes = []
 
@@ -47,7 +47,7 @@ class ResolverVisitor(BetaAssemblyVisitor):
         if isinstance(node.lhs, Dot):
             self._next_byte = result
         else:
-            self.symbol_tables.add_variable(node.lhs.name, result)
+            self.symbol_tables.add_identifier(node.lhs.name, result)
 
     def visitBetaTree(self, node: BetaTree):
         for child in node.children:
@@ -61,7 +61,7 @@ class ResolverVisitor(BetaAssemblyVisitor):
         macro_def = self.symbol_tables.get_marco(node)
         for param, arg in zip(macro_def.parameters, node.arguments):
             value = arg.eval(symbol_table=self.symbol_tables, next_byte=self._next_byte)
-            self.symbol_tables.add_variable(param, value)
+            self.symbol_tables.add_identifier(param, value)
         macro_def.body.accept(self)
         self._rm_scope()
 
