@@ -1,6 +1,6 @@
+from assembler.exceptions import UnknownIdentifierError, UnresolvedIdentifierError
+from assembler.symbol_tables import IdentifierTable, MacroTable
 from parsing.nodes import *
-from semantic.exceptions import UnknownIdentifierError, UnresolvedIdentifierError
-from semantic.symbol_tables import MacroTable, IdentifierTable
 
 
 def to_valid_byte(byte):

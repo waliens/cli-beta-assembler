@@ -1,8 +1,8 @@
 import os
 from tempfile import gettempdir, mktemp
 
+from assembler.resolver import ByteGenerator
 from parsing.parse_util import parse_file
-from semantic.resolver import ByteGenerator
 
 
 def assemble(filepath):
