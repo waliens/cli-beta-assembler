@@ -61,7 +61,7 @@ class ByteGenerator(object):
             self._write_bytes(_bytes)
         # second pass for fixing unresolved expressions !
         for index in self._bytes_to_resolve.keys():
-            self._bytes[index] = self._bytes[index].eval(self._identifier_table)
+            self._bytes[index] = to_valid_byte(self._bytes[index].eval(self._identifier_table))
         return self._bytes
 
     def resolveMacroInvocation(self, invoc: MacroInvocation):
