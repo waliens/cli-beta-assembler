@@ -1,31 +1,28 @@
+import os
+from tempfile import gettempdir, mkstemp, mktemp
 
 from parsing.parse_util import parse_file
 from semantic.resolver import ByteGenerator
 
 
-class BetaAssembler(object):
-    def __init__(self, filepath):
-        self._filepath = filepath
-        self._reset()
-
-    def _reset(self):
-        self._parser = None
-        self._syntax_tree = None
-        self._generator = ByteGenerator()
-
-    def assemble(self):
-        self._parse()
-        bytes = self._generator.generate(self._syntax_tree)
-        print(self._generator._identifier_table.identifiers)
-        print(self._generator._macro_table.macros)
-
-    def _parse(self):
-        self._syntax_tree, _ = parse_file(
-            self._filepath,
-            parsed_files=[self._filepath]
-        )
+def assemble(filepath):
+    generator = ByteGenerator()
+    syntax_tree, _ = parse_file(filepath, parsed_files=[filepath])
+    return generator.generate(syntax_tree)
 
 
+def assemble_str(beta: str):
+    filename = mktemp(prefix="beta", dir=gettempdir())
+    filepath = os.path.join(gettempdir(), filename)
+    try:
+        with open(filepath, "w+") as file:
+            file.write(beta)
+        return assemble(filepath)
+    except Exception as e:
+        raise e
+    finally:
+        if os.path.isfile(filepath):
+            os.remove(filepath)
 
 
 

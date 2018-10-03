@@ -3,32 +3,8 @@ from semantic.exceptions import UnknownIdentifierError, UnresolvedIdentifierErro
 from semantic.symbol_tables import MacroTable, IdentifierTable
 
 
-# class DependencyNode(object):
-#     def __init__(self, name, loc, expr=None):
-#         self._name = name
-#         self._expr = expr
-#         self._loc = loc
-#
-#     @property
-#     def name(self):
-#         return self._name
-#
-#     @property
-#     def expr(self):
-#         return self._expr
-#
-#
-# class DependencyGraph(object):
-#     def __init__(self):
-#         self._nodes = dict()
-#         self._depends_on = dict()  # if node1 depends on node2, there is a directed edge between node1 and node2
-#         self._is_depen = dict()  # if node1 depends on node2, there is a directed edge between node2 and node1
-#
-#     def add_node(self, node, depends):
-#         self._nodes[node.name] = node
-#         for d in depends:
-#             self._depends_on[node] = self._depends_on.get(node, []) + [d]
-#             self._is_depen[d] = self._is_depen.get(d, []) + [node]
+def to_valid_byte(byte):
+    return byte % 256 if byte >= 0 else (-((max(byte, -255) ^ 255) + 1)) % 256
 
 
 class ByteGenerator(object):
@@ -47,6 +23,8 @@ class ByteGenerator(object):
     def _write_byte(self, byte):
         if not isinstance(byte, int):
             self._bytes_to_resolve[self._next_byte] = byte
+        else:
+            byte = to_valid_byte(byte)
         n_bytes = len(self.bytes)
         if self._next_byte == n_bytes:
             self._bytes.append(byte)
