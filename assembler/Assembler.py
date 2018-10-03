@@ -1,5 +1,5 @@
 import os
-from tempfile import gettempdir, mkstemp, mktemp
+from tempfile import gettempdir, mktemp
 
 from parsing.parse_util import parse_file
 from semantic.resolver import ByteGenerator
