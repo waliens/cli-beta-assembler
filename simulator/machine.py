@@ -3,6 +3,13 @@ from operator import add, sub, mul, floordiv, and_, or_, lshift, xor, rshift
 from simulator.exceptions import InvalidAddressError, AddressNotWritableError, OpcodeUnknownError
 
 
+def twos_comp_16bits(twos):
+    v = twos
+    if (twos >> 15) & 1 == 1:
+        v = -(((~twos) & 0xFFFF) + 1)
+    return v
+
+
 class Memory(object):
     def __init__(self, size, step=1, read_only=None, silent=True):
         """
@@ -143,7 +150,7 @@ class BetaMachine(object):
         instr = self._instreg
         opcode = (instr >> 26) & 0x3F
         ra, rb, rc = (instr >> 16) & 0x1F, (instr >> 11) & 0x1F, (instr >> 21) & 0x1F
-        lit = instr & 0xFF
+        lit = twos_comp_16bits(instr & 0xFFFF)
         if opcode in self._arith_instr:  # arithmetic
             if opcode >= 0x30:  # with literal
                 self._exec_arith_lit(opcode, ra, lit, rc)
