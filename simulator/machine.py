@@ -1,6 +1,7 @@
 from operator import add, sub, mul, floordiv, and_, or_, lshift, xor, rshift
 
-from simulator.exceptions import InvalidAddressError, AddressNotWritableError, OpcodeUnknownError
+from simulator.exceptions import InvalidAddressError, AddressNotWritableError, OpcodeUnknownError, \
+    BreakpointFoundException
 
 
 def twos_comp_16bits(twos):
@@ -71,7 +72,7 @@ def sra(a, b):
 
 
 class BetaMachine(object):
-    def __init__(self, init, dram_size=0x100000, dram_step=4, sram_size=32, sram_step=1):
+    def __init__(self, init, dram_size=0x100000, dram_step=4, sram_size=32, sram_step=1, breakpoints=None):
         """
         Parameters
         ----------
@@ -85,6 +86,8 @@ class BetaMachine(object):
             Initial size of thr static ram
         sram_step:
             Address step between two words in the sram
+        breakpoints:
+            Addresses where breakpoints were found
         """
         self._dram = Memory(size=dram_size, step=dram_step)  # default size is 1 Mwords
         self.dram.store_batch(0, init)
@@ -129,6 +132,7 @@ class BetaMachine(object):
             0x3D: ("SHRC", rshift),
             0x3E: ("SRAC", sra)
         }
+        self._breakpoints = breakpoints if breakpoints is not None else set()
 
     @property
     def dram(self):
@@ -145,6 +149,11 @@ class BetaMachine(object):
     @pc.setter
     def pc(self, value):
         self._pc = value - (value % self.dram.step)
+
+    @property
+    def curr_instr_addr(self):
+        """Current instruction address"""
+        return self.pc - self.dram.step
 
     def _exec_curr_instr(self):
         instr = self._instreg
@@ -172,6 +181,8 @@ class BetaMachine(object):
             raise OpcodeUnknownError(opcode)
 
     def step(self):
+        if self.curr_instr_addr in self._breakpoints:
+            raise BreakpointFoundException(self.curr_instr_addr)
         self._exec_curr_instr()
         self._instreg = self.dram.load(self.pc)
         self.pc += self._dram.step
@@ -180,6 +191,8 @@ class BetaMachine(object):
         try:
             while 1:
                 self.step()
+        except BreakpointFoundException as e:
+            print(str(e))
         except OpcodeUnknownError as e:
             print(str(e))
 

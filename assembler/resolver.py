@@ -20,6 +20,10 @@ class ByteGenerator(object):
     def bytes(self):
         return self._bytes
 
+    @property
+    def breakpoints(self):
+        return self._breakpoints
+
     def _write_byte(self, byte):
         if not isinstance(byte, int):
             self._bytes_to_resolve[self._next_byte] = byte
