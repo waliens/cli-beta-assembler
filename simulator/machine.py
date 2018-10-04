@@ -1,7 +1,19 @@
+from math import ceil
 from operator import add, sub, mul, floordiv, and_, or_, lshift, xor, rshift
 
+from assembler.assembler import assemble
 from simulator.exceptions import InvalidAddressError, AddressNotWritableError, OpcodeUnknownError, \
     BreakpointFoundException
+
+
+def bytes2words(bytes):
+    nbytes = len(bytes)
+    n_iter = int(ceil(nbytes / 4))
+    words = list()
+    for i in range(n_iter):
+        word = (bytes[i * 4 + 3] << 24) + (bytes[i * 4 + 2] << 16) + (bytes[i * 4 + 1] << 8) + bytes[i * 4]
+        words.append(word)
+    return words
 
 
 def twos_comp_16bits(twos):
@@ -31,7 +43,7 @@ class Memory(object):
             self.store(start + i * self.step, word)
 
     def store(self, addr, val):
-        self._check_addr(addr)
+        addr = self._check_addr(addr)
         if addr in self._read_only:
             if self._silent:
                 return
@@ -39,14 +51,21 @@ class Memory(object):
         self._memory[self._idx(addr)] = self._word(val)
 
     def load(self, addr):
-        self._check_addr(addr)
+        addr = self._check_addr(addr)
         if addr in self._read_only:
             return self._read_only[addr]
         return self._memory[self._idx(addr)]
 
+    def load_batch(self, start, n):
+        return [self.load(start + self.step * i) for i in range(n)]
+
     def _check_addr(self, addr):
-        if not 0 <= addr < self.address_max:
+        """remove useless bits + align the address"""
+        addr %= self.address_max
+        addr -= addr % self.step
+        if not 0 <= addr:
             raise InvalidAddressError(addr, self)
+        return addr
 
     @property
     def address_max(self):
@@ -72,7 +91,7 @@ def sra(a, b):
 
 
 class BetaMachine(object):
-    def __init__(self, init, dram_size=0x100000, dram_step=4, sram_size=32, sram_step=1, breakpoints=None):
+    def __init__(self, init, dram_size=0x100000, dram_step=4, sram_size=32, sram_step=1, breakpoints=None, supervisor=True):
         """
         Parameters
         ----------
@@ -88,6 +107,8 @@ class BetaMachine(object):
             Address step between two words in the sram
         breakpoints:
             Addresses where breakpoints were found
+        supervisor: bool
+            True if the machine starts in supervisor mode, False otherwise
         """
         self._dram = Memory(size=dram_size, step=dram_step)  # default size is 1 Mwords
         self.dram.store_batch(0, init)
@@ -133,6 +154,7 @@ class BetaMachine(object):
             0x3E: ("SRAC", sra)
         }
         self._breakpoints = breakpoints if breakpoints is not None else set()
+        self._supervisor = supervisor
 
     @property
     def dram(self):
@@ -144,11 +166,12 @@ class BetaMachine(object):
 
     @property
     def pc(self):
-        return self._pc
+        return self._pc | (0x80000000 if self._supervisor else 0x0)
 
     @pc.setter
     def pc(self, value):
-        self._pc = value - (value % self.dram.step)
+        # set pc31 if necessary
+        self._pc = value
 
     @property
     def curr_instr_addr(self):
@@ -194,7 +217,10 @@ class BetaMachine(object):
         except BreakpointFoundException as e:
             print(str(e))
         except OpcodeUnknownError as e:
-            print(str(e))
+            if e.opcode == 0:
+                print("Reached HALT().")
+            else:
+                raise e
 
     def _exec_store(self, ra, lit, rc):
         self.dram.store(self.sram.load(ra) + lit, self.sram.load(rc))
@@ -210,7 +236,10 @@ class BetaMachine(object):
 
     def _exec_jump(self, ra, rc):
         self.sram.store(rc, self.pc)
-        self.pc = self.sram.load(ra)
+        jmp_addr = self.sram.load(ra)
+        if self._supervisor and (jmp_addr >> 31) & 1 == 0:
+            self._supervisor = False
+        self.pc = jmp_addr
 
     def _exec_branch_equal(self, ra, lit, rc):
         self._exec_branch_cond(not bool(self.sram.load(ra)), lit, rc)
@@ -230,3 +259,11 @@ class BetaMachine(object):
     def _exec_arith_nolit(self, opcode, ra, rb, rc):
         b = self._sram.load(rb)
         self._exec_arith_lit(opcode, ra, b, rc)
+
+
+def simulate(filepath):
+    """Simulate the given assembly, and return the machine after execution"""
+    bytes, breakpoints = assemble(filepath)
+    machine = BetaMachine(bytes2words(bytes), breakpoints=breakpoints)
+    machine.run()
+    return machine

@@ -16,6 +16,11 @@ class OpcodeUnknownError(ValueError):
     def __init__(self, opcode):
         super(OpcodeUnknownError, self).__init__(
             "Opcode '0b{:06b}' unknown.".format(opcode))
+        self._opcode = opcode
+
+    @property
+    def opcode(self):
+        return self._opcode
 
 
 class BreakpointFoundException(Exception):
