@@ -75,8 +75,8 @@ class TestSimulator(TestCase):
         self.assertEqual(0x00, machine.sram.load(4), msg="R4")
         self.assertEqual(0xA0, machine.sram.load(27), msg="BP")
         self.assertEqual(0x8000008C, machine.sram.load(28), msg="LP")
-        self.assertEqual(0xA0, machine.sram.load(27), msg="SP")
-        self.assertEqual(0xA0, machine.sram.load(27), msg="XP")
+        self.assertEqual(0xA0, machine.sram.load(29), msg="SP")
+        self.assertEqual(0x00, machine.sram.load(30), msg="XP")
         # pc
         self.assertEqual(0x8000009C, machine.pc)
         # dram
