@@ -1,4 +1,3 @@
-from antlr4 import RecognitionException
 from antlr4.error.ErrorListener import ErrorListener
 
 

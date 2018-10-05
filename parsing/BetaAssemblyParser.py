@@ -1,14 +1,16 @@
 # Generated from parsing/BetaAssembly.g4 by ANTLR 4.7.1
 # encoding: utf-8
-from antlr4 import *
-from io import StringIO
-from typing.io import TextIO
-import sys
-
-
 import os
-from .nodes import BetaTree, Node, Align, Breakpoint, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
+import sys
+from io import StringIO
+
+from antlr4 import *
+from typing.io import TextIO
+
 from .exceptions import IncludeFileNotFoundError, CircularInclusionError
+from .nodes import BetaTree, Align, Breakpoint, Identifier, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, \
+    ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
+
 
 def serializedATN():
     with StringIO() as buf:

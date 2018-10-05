@@ -1,5 +1,5 @@
-from parsing.nodes import Macro, Identifier, MacroInvocation, Expression, Assignment, Align, Dot
 from assembler.exceptions import UnknownIdentifierError, MacroUnknownError, CircularMacroError
+from parsing.nodes import Macro, Identifier, MacroInvocation, Expression, Assignment, Align, Dot
 
 
 class IdentifierTable(object):

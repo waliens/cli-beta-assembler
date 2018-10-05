@@ -1,5 +1,5 @@
-from parsing.nodes import *
 from parsing.exceptions import BetaAssemblySemanticError
+from parsing.nodes import *
 
 
 class UnknownIdentifierError(BetaAssemblySemanticError):

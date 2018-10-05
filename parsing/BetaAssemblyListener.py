@@ -5,10 +5,6 @@ if __name__ is not None and "." in __name__:
 else:
     from BetaAssemblyParser import BetaAssemblyParser
 
-import os
-from .nodes import BetaTree, Node, Align, Breakpoint, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
-from .exceptions import IncludeFileNotFoundError, CircularInclusionError
-
 
 # This class defines a complete listener for a parse tree produced by BetaAssemblyParser.
 class BetaAssemblyListener(ParseTreeListener):
