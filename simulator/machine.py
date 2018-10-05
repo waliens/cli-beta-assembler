@@ -155,6 +155,7 @@ class BetaMachine(object):
         }
         self._breakpoints = breakpoints if breakpoints is not None else set()
         self._supervisor = supervisor
+        self._step_count = 0
 
     @property
     def dram(self):
@@ -177,6 +178,10 @@ class BetaMachine(object):
     def curr_instr_addr(self):
         """Current instruction address"""
         return self.pc - self.dram.step
+
+    @property
+    def step_count(self):
+        return self._step_count
 
     def _exec_curr_instr(self):
         instr = self._instreg
@@ -204,23 +209,28 @@ class BetaMachine(object):
             raise OpcodeUnknownError(opcode)
 
     def step(self):
-        if self.curr_instr_addr in self._breakpoints:
-            raise BreakpointFoundException(self.curr_instr_addr)
         self._exec_curr_instr()
         self._instreg = self.dram.load(self.pc)
         self.pc += self._dram.step
+        self._step_count += 1
+        if (self.curr_instr_addr & 0x7FFFFFFF) in self._breakpoints:  # remove pc31 bit
+            raise BreakpointFoundException(self.curr_instr_addr)
 
     def run(self):
+        """
+        Returns
+        -------
+        term: int
+            1 when stopped at a breakpoint, 0 reaching a halt"""
         try:
             while 1:
                 self.step()
-        except BreakpointFoundException as e:
-            print(str(e))
+        except BreakpointFoundException:
+            return 1
         except OpcodeUnknownError as e:
-            if e.opcode == 0:
-                print("Reached HALT().")
-            else:
+            if e.opcode != 0:  # did not reach HALT()
                 raise e
+        return 0
 
     def _exec_store(self, ra, lit, rc):
         self.dram.store(self.sram.load(ra) + lit, self.sram.load(rc))
@@ -265,5 +275,6 @@ def simulate(filepath):
     """Simulate the given assembly, and return the machine after execution"""
     bytes, breakpoints = assemble(filepath)
     machine = BetaMachine(bytes2words(bytes), breakpoints=breakpoints)
-    machine.run()
+    while machine.run() != 0:
+        pass
     return machine
