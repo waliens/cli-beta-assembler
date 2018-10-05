@@ -21,8 +21,9 @@ def error_header(filepath, line, col, fullpath=False):
 
 def main(argv):
     parser = ArgumentParser(description='Parse beta assembly file')
-    parser.add_argument('--filepath', dest="filepath", help="Path to the root assembly file.")
-    parser.add_argument('--fullpath', dest="fullpath", action="store_true")
+    parser.add_argument("--filepath", dest="filepath", help="Path to the root assembly file.")
+    parser.add_argument("--fullpath", dest="fullpath", action="store_true",
+                        help="True for showing full path in logs, false for showing only ")
     parser.set_defaults(fullpath=False)
     params, _ = parser.parse_known_args(argv)
 
