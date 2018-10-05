@@ -54,3 +54,13 @@ A(1) B(1)
 """)
         self.assertEqual((0, 0, 0, 0, 0, 0, 18), tuple(bytes))
         self.assertSetEqual({4, 6}, breakpoints)
+
+    def testMacroInvocAlign(self):
+        bytes, _ = assemble("test_files/test_assem_macro_invoc_align.asm")
+        expected = [
+            0x04, 0x00, 0xbd, 0xc3, 0xfc, 0xff, 0x3d, 0x64,
+            0x04, 0x00, 0xbd, 0xc3, 0xfc, 0xff, 0x5d, 0x64,
+            0x01, 0x00, 0x9f, 0x77, 0x08, 0x00, 0xbd, 0xc7,
+            0x00, 0x08, 0x21, 0x80
+        ]
+        self.assertEqual(tuple(expected), tuple(bytes))
