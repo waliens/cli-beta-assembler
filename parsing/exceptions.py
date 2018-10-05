@@ -1,3 +1,4 @@
+from antlr4 import RecognitionException
 from antlr4.error.ErrorListener import ErrorListener
 
 
@@ -8,6 +9,27 @@ class BetaAssemblyError(ValueError):
 class BetaAssemblySemanticError(ValueError):
     def __init__(self, source, line, col, msg):
         super(BetaAssemblySemanticError, self).__init__("In file '{}' at {}:{}: {}.".format(source, line, col, msg))
+        self._source = source
+        self._line = line
+        self._col = col
+        self._msg = msg
+
+    @property
+    def source(self):
+        return self._source
+
+    @property
+    def line(self):
+        return self._line
+
+    @property
+    def col(self):
+        return self._col
+
+    @property
+    def msg(self):
+        return self._msg
+
 
 
 class IncludeFileNotFoundError(BetaAssemblySemanticError):
