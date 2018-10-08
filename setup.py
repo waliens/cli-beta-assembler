@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 
-NAME = 'annotation_exporter'
+NAME = 'beta'
 VERSION = '1.0'
 URL = 'https://github.com/waliens/cli-beta-assembler'
 AUTHOR = "Romain Mormont"
@@ -22,4 +22,4 @@ if __name__ == '__main__':
           long_description=LONG_DESCRIPTION,
           platforms='any',
           install_requires=['antlr4-python3-runtime'],
-          packages=['beta'])
+          packages=['beta', 'beta.assembler', 'beta.parsing', 'beta.simulator'])
