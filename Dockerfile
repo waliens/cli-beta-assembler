@@ -6,5 +6,3 @@ RUN pip install antlr4-python3-runtime
 
 ADD . /beta
 RUN cd /beta && pip install .
-
-ENTRYPOINT /bin/bash
