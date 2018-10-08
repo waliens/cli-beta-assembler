@@ -1,9 +1,13 @@
-# Generated from parsing/BetaAssembly.g4 by ANTLR 4.7.1
-import sys
-from io import StringIO
-
+# Generated from beta/parsing/BetaAssembly.g4 by ANTLR 4.7.1
 from antlr4 import *
+from io import StringIO
 from typing.io import TextIO
+import sys
+
+
+import os
+from .nodes import BetaTree, Node, Align, Breakpoint, Identifier, Atom, Number, Dot, DivOp, MultOp, NegateOp, PlusOp, MinusOp, ModuloOp, ShiftLeftOp, ShiftRightOp, BitwiseComplementOp, Assignment, Macro, MacroInvocation
+from .exceptions import IncludeFileNotFoundError, CircularInclusionError
 
 
 def serializedATN():

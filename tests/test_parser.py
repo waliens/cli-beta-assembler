@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from parsing.exceptions import BetaAssemblySyntaxError
-from parsing.nodes import Number, Macro, NegateOp, PlusOp, MultOp, Assignment, MacroInvocation, Identifier
-from parsing.parse_util import parse_string, parse_file
+from beta.parsing.exceptions import BetaAssemblySyntaxError
+from beta.parsing.nodes import Number, Macro, NegateOp, PlusOp, MultOp, Assignment, MacroInvocation, Identifier
+from beta.parsing import parse_string, parse_file
 
 
 class TestGrammar(TestCase):

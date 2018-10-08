@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from assembler.assembler import assemble
-from simulator.exceptions import AddressNotWritableError
-from simulator.machine import twos_comp_16bits, Memory, simulate, bytes2words, BetaMachine
+from beta.assembler import assemble
+from beta.simulator.exceptions import AddressNotWritableError
+from beta.simulator.machine import twos_comp_16bits, Memory, simulate, bytes2words, BetaMachine
 
 
 class TestMachineUtil(TestCase):
