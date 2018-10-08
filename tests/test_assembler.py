@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from beta.assembler import assemble_str, assemble
+from beta.assembler.assembler import assemble_str, assemble
 
 
 class TestAssembler(TestCase):

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from beta.assembler import assemble
+from beta.assembler.assembler import assemble
 from beta.simulator.exceptions import AddressNotWritableError
 from beta.simulator.machine import twos_comp_16bits, Memory, simulate, bytes2words, BetaMachine
 
