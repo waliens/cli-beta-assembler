@@ -2,11 +2,11 @@
 import os
 from argparse import ArgumentParser
 
-from assembler.assembler import assemble
-from assembler.exceptions import UnknownIdentifierError
-from parsing import BetaAssemblySyntaxError, parse_file
-from parsing.exceptions import IncludeFileNotFoundError
-from simulator.machine import simulate
+from .assembler.assembler import assemble
+from .assembler.exceptions import UnknownIdentifierError
+from .parsing import BetaAssemblySyntaxError, parse_file
+from .parsing.exceptions import IncludeFileNotFoundError
+from .simulator.machine import simulate
 
 
 def display_name(filepath, fullpath=False):
@@ -47,6 +47,7 @@ def main(argv):
         machine = simulate(filepath)
         print("success")
         print(" -> {} cycle(s)".format(machine.step_count))
+        return 0
     except IOError as e:
         print("error: couldn't process the file '{}': {}".format(
             display_name(e.filename, fullpath=params.fullpath), e.strerror
@@ -61,6 +62,7 @@ def main(argv):
     except UnknownIdentifierError as e:
         header = error_header(e.source, e.line, e.col, fullpath=params.fullpath)
         print("error: {} : {}".format(header, e.msg))
+    exit(-1)  # an error occurred
 
 
 if __name__ == "__main__":
