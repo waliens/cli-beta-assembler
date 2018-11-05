@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 NAME = 'beta'
-VERSION = '1.0'
+VERSION = '1.1'
 URL = 'https://github.com/waliens/cli-beta-assembler'
 AUTHOR = "Romain Mormont"
 AUTHOR_EMAIL = "r.mormont[_at_]uliege.be"

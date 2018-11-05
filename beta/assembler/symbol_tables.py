@@ -1,5 +1,6 @@
-from beta.assembler.exceptions import UnknownIdentifierError, MacroUnknownError, CircularMacroError
-from beta.parsing.nodes import Macro, Identifier, MacroInvocation, Expression, Assignment, Align, Dot
+from beta.assembler.exceptions import UnknownIdentifierError, MacroUnknownError, CircularMacroError, Number
+from beta.parsing.nodes import Macro, Identifier, MacroInvocation, Expression, Assignment, Align, Dot, MinusOp, \
+    BinaryOperator, UnaryOperator, Atom
 
 
 class IdentifierTable(object):
@@ -41,7 +42,6 @@ class MacroTable(object):
 
     def add_macro(self, macro: Macro):
         self._macros[macro.key()] = macro
-        self.simplify(macro)
 
     def get_marco(self, invocation: MacroInvocation):
         try:
@@ -58,48 +58,49 @@ class MacroTable(object):
             if not macro.simplified:
                 self.simplify(macro)
 
-    def simplify(self, macro: Macro):
+    def simplify(self, macro: Macro, next_byte_offset=None):
         if macro.key() in self._simplify_circ_check:
             raise CircularMacroError(macro)
         self._simplify_circ_check.add(macro.key())
-        self._simplify(macro)
+        self._simplify(macro, next_byte_offset=next_byte_offset)
         self._simplify_circ_check.remove(macro.key())
 
-    def _simplify(self, macro: Macro):
+    def _simplify(self, macro: Macro, next_byte_offset=None):
         result_seq = list()
         for child in macro.body.children:
             if isinstance(child, Expression):
-                curr_seq = [child.simplify()]
+                curr_seq = [apply_dot_offset(child.simplify(), next_byte_offset)]
             elif isinstance(child, MacroInvocation):
                 curr_seq = self.invoke(invocation=child)
             elif isinstance(child, Align) or isinstance(child, Assignment):
                 curr_seq = [child]
             else:
                 raise ValueError("Unknown node type '{}' when simplifying macro '{}'".format(type(child), macro.name))
-
             result_seq.extend(curr_seq)
-
+            next_byte_offset = increment_next_byte(next_byte_offset, curr_seq)
         macro.body.children = result_seq
         macro.simplified = True
 
-    def invoke(self, invocation: MacroInvocation):
+    def invoke(self, invocation: MacroInvocation, next_byte=None):
         macro = self.get_marco(invocation)
         if not macro.simplified:
-            self.simplify(macro)
+            self.simplify(macro, next_byte_offset=0)
         # at this step, the body should not contain any macro invocations !
         new_table = self._identifier_table.clone()
         for param, arg in zip(macro.parameters, invocation.arguments):
-            arg_val = arg.simplify(symbol_table=self._identifier_table)
+            arg_val = arg.simplify(symbol_table=self._identifier_table, next_byte=next_byte)
             new_table.add_identifier(param.name, arg_val)
         # transform bytes list
         invoked = list()
+        next_byte_offset = 0
         for child in macro.body.children:
             if isinstance(child, Expression):
-                curr_seq = [child.simplify(symbol_table=new_table)]
+                curr_seq = [simplify_with_dot_offset(child, next_byte_offset, next_byte=next_byte, symbol_table=new_table)]
             elif isinstance(child, Align):
                 curr_seq = [child]
             elif isinstance(child, Assignment):
-                child.rhs = child.rhs.simplify(symbol_table=new_table)
+                # TODO handle dot assignment with dot offset
+                child.rhs = simplify_with_dot_offset(child.rhs, next_byte_offset, next_byte=next_byte, symbol_table=new_table)
                 curr_seq = []
                 if isinstance(child.lhs, Dot):
                     curr_seq.append(child)
@@ -107,5 +108,46 @@ class MacroTable(object):
                     new_table.add_identifier(child.lhs.name, child.rhs)
             else:
                 raise ValueError("Unknown node type '{}' when invoking macro '{}'".format(type(child), invocation.name))
+            next_byte_offset = increment_next_byte(next_byte_offset, curr_seq)
             invoked.extend(curr_seq)
         return invoked
+
+
+def simplify_with_dot_offset(tree, next_byte_offset, next_byte=None, **simplify_kwargs):
+    """Simplify an expression given a dot offset and an (optional) next_byte value"""
+    if next_byte is None:
+        return apply_dot_offset(tree.simplify(next_byte=None, **simplify_kwargs), offset=next_byte_offset)
+    else:
+        return tree.simplify(next_byte=next_byte + next_byte_offset, **simplify_kwargs)
+
+
+def increment_next_byte(next_byte, sequence):
+    """Given a sequence, increase next_byte to take into account bytes in this sequence"""
+    if next_byte is None:
+        return next_byte
+    for item in sequence:
+        if isinstance(item, Align):
+            value = item.expression.eval()  # TODO handle align with identifier based size
+            if next_byte % value != 0:
+                next_byte += value - (next_byte % value)
+        else:
+            next_byte += 1
+    return next_byte
+
+
+def apply_dot_offset(tree, offset):
+    if isinstance(tree, Dot):
+        return MinusOp(Dot(), Number(offset))
+    elif isinstance(tree, BinaryOperator):
+        return type(tree)(
+            apply_dot_offset(tree.left, offset),
+            apply_dot_offset(tree.right, offset)
+        )
+    elif isinstance(tree, UnaryOperator):
+        return type(tree)(
+            apply_dot_offset(tree.expr, offset)
+        )
+    elif isinstance(tree, Atom):  # except Dot
+        return tree
+    else:
+        raise ValueError("Unknown type")
