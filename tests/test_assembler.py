@@ -65,7 +65,7 @@ A(1) B(1)
         ]
         self.assertEqual(tuple(expected), tuple(bytes))
 
-    def testBranching(self):
+    def testDotOffset(self):
         bytes, _ = assemble("test_files/test_dot_offset1.asm")
         expected = [
             0x14, 0x04, 0xBF, 0xC3,
@@ -92,3 +92,12 @@ A(1) B(1)
             0xFA, 0x00, 0x00, 0x00,
         ]
         self.assertEqual(tuple(expected2), tuple(bytes2))
+
+        bytes3, _ = assemble("test_files/test_dot_offset3.asm")
+        expected3 = [
+            0x00, 0x00, 0xFF, 0x77,
+            0x01, 0x00, 0x5F, 0x77,
+            0x00, 0x00, 0x00, 0x00,
+            0xFF, 0x00, 0xFF, 0x77
+        ]
+        self.assertEqual(tuple(expected3), tuple(bytes3))

@@ -69,7 +69,7 @@ class ByteGenerator(object):
         return self._bytes
 
     def resolveMacroInvocation(self, invoc: MacroInvocation):
-        expressions = self._macro_table.invoke(invoc, next_byte=self._next_byte)
+        expressions = self._macro_table.invoke(invoc)
         # bytes should be added to the byte sequence here (not in generate) to cope correctly with alignment !
         for expr in expressions:
             curr_bytes = self._process_node(expr)
