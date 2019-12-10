@@ -2,6 +2,7 @@ import pickle
 from math import ceil
 from operator import add, sub, mul, floordiv, and_, or_, lshift, xor, rshift
 
+from random import random, seed, randint
 from beta.assembler.assembler import assemble
 from .exceptions import InvalidAddressError, AddressNotWritableError, OpcodeUnknownError, BreakpointFoundException
 
@@ -205,6 +206,10 @@ class BetaMachine(object):
             self._exec_store(ra, lit, rc)
         elif opcode == 0x1F:  # LDR
             self._exec_loadr(lit, rc)
+        elif opcode == 0x00 and rb == 6:  # RANDOM syscall: generate a random number
+            self.sram.store(0, randint(0, 0xFFFFFFFF))
+        elif opcode == 0x00 and rb == 7:  # SEED syscalls: fix random seed to a specific constant value
+            seed(42)
         else:
             raise OpcodeUnknownError(opcode)
 
