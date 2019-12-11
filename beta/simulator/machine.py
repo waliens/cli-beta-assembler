@@ -18,9 +18,14 @@ def bytes2words(bytes):
 
 
 def twos_comp_16bits(twos):
+    return twos_comp(twos, nbits=16)
+
+
+def twos_comp(twos, nbits=32):
     v = twos
-    if (twos >> 15) & 1 == 1:
-        v = -(((~twos) & 0xFFFF) + 1)
+    if (twos >> (nbits - 1)) & 1 == 1:
+        mask = (1 << nbits) - 1
+        v = -(((~twos) & mask) + 1)
     return v
 
 
@@ -92,7 +97,7 @@ def sra(a, b):
 
 
 class BetaMachine(object):
-    def __init__(self, init, dram_size=0x100000, dram_step=4, sram_size=32, sram_step=1, breakpoints=None, supervisor=True):
+    def __init__(self, init, dram_size=0x100000, dram_step=4, sram_size=32, sram_step=1, breakpoints=None, supervisor=True, debug=False):
         """
         Parameters
         ----------
@@ -110,6 +115,8 @@ class BetaMachine(object):
             Addresses where breakpoints were found
         supervisor: bool
             True if the machine starts in supervisor mode, False otherwise
+        debug: bool
+            True for debug mode (all instructions executed are dumped on the standard output
         """
         self._dram = Memory(size=dram_size, step=dram_step)  # default size is 1 Mwords
         self.dram.store_batch(0, init)
@@ -131,9 +138,9 @@ class BetaMachine(object):
             0x21: ("SUB", sub),
             0x22: ("MUL", mul),
             0x23: ("DIV", floordiv),
-            0x24: ("COMPEQ", lambda a, b: int(a == b)),
-            0x25: ("COMPLT", lambda a, b: int(a < b)),
-            0x26: ("COMPLE", lambda a, b: int(a <= b)),
+            0x24: ("COMPEQ", lambda a, b: int(twos_comp(a) == twos_comp(b))),
+            0x25: ("COMPLT", lambda a, b: int(twos_comp(a) < twos_comp(b))),
+            0x26: ("COMPLE", lambda a, b: int(twos_comp(a) <= twos_comp(b))),
             0x28: ("AND", and_),
             0x29: ("OR", or_),
             0x2A: ("XOR", xor),
@@ -144,9 +151,9 @@ class BetaMachine(object):
             0x31: ("SUBC", sub),
             0x32: ("MULC", mul),
             0x33: ("DIVC", floordiv),
-            0x34: ("COMPEQC", lambda a, b: int(a == b)),
-            0x35: ("COMPLTC", lambda a, b: int(a < b)),
-            0x36: ("COMPLEC", lambda a, b: int(a <= b)),
+            0x34: ("COMPEQC", lambda a, lit: int(twos_comp(a) == lit)),
+            0x35: ("COMPLTC", lambda a, lit: int(twos_comp(a) < lit)),
+            0x36: ("COMPLEC", lambda a, lit: int(twos_comp(a) <= lit)),
             0x38: ("ANDC", and_),
             0x39: ("ORC", or_),
             0x3A: ("XORC", xor),
@@ -157,6 +164,7 @@ class BetaMachine(object):
         self._breakpoints = breakpoints if breakpoints is not None else set()
         self._supervisor = supervisor
         self._step_count = 0
+        self._debug = debug
 
     @property
     def dram(self):
@@ -181,14 +189,43 @@ class BetaMachine(object):
         return self.pc - self.dram.step
 
     @property
+    def debug(self):
+        return self._debug
+
+    @debug.setter
+    def debug(self, value):
+        self._debug = value
+
+    @property
     def step_count(self):
         return self._step_count
+
+    def _op_name(self, opcode):
+        return self._dram_instr.get(
+            opcode, self._arith_instr.get(
+                opcode, self._pc_instr.get(
+                    opcode, ("SVR",))))[0]
+
+    def _op_has_lit(self, opcode):
+        return (opcode in self._arith_instr and opcode >= 0x30) \
+               or (opcode in self._dram_instr) \
+               or (opcode in self._pc_instr and opcode != 0x1B) \
+               or (opcode == 0)
+
+    def _debug_exec(self, instr, opcode, ra, rb, rc, lit):
+        if not self._debug:
+            return
+        print("[0x{:08x}] -> {} (code: {:02x}) r{}={}, {}, r{}={}".format(
+            instr, self._op_name(opcode), opcode, ra, self.sram.load(ra),
+            "l={}".format(twos_comp_16bits(lit)) if self._op_has_lit(opcode) else "r{}={}".format(rb, self.sram.load(rb)),
+            rc, self.sram.load(rc),))
 
     def _exec_curr_instr(self):
         instr = self._instreg
         opcode = (instr >> 26) & 0x3F
         ra, rb, rc = (instr >> 16) & 0x1F, (instr >> 11) & 0x1F, (instr >> 21) & 0x1F
         lit = twos_comp_16bits(instr & 0xFFFF)
+        self._debug_exec(instr, opcode, ra, rb, rc, lit)
         if opcode in self._arith_instr:  # arithmetic
             if opcode >= 0x30:  # with literal
                 self._exec_arith_lit(opcode, ra, lit, rc)
@@ -206,9 +243,9 @@ class BetaMachine(object):
             self._exec_store(ra, lit, rc)
         elif opcode == 0x1F:  # LDR
             self._exec_loadr(lit, rc)
-        elif opcode == 0x00 and rb == 6:  # RANDOM syscall: generate a random number
+        elif opcode == 0x00 and lit == 6:  # RANDOM syscall: generate a random number
             self.sram.store(0, randint(0, 0xFFFFFFFF))
-        elif opcode == 0x00 and rb == 7:  # SEED syscalls: fix random seed to a specific constant value
+        elif opcode == 0x00 and lit == 7:  # SEED syscalls: fix random seed to a specific constant value
             seed(42)
         else:
             raise OpcodeUnknownError(opcode)
