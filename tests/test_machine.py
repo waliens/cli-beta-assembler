@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from beta.assembler.assembler import assemble
+from beta.assembler.assembler import assemble, assemble_str
 from beta.simulator.exceptions import AddressNotWritableError
-from beta.simulator.machine import twos_comp_16bits, Memory, simulate, bytes2words, BetaMachine
+from beta.simulator.machine import twos_comp_16bits, Memory, simulate, bytes2words, BetaMachine, twos_comp, nb2twos
 
 
 class TestMachineUtil(TestCase):
@@ -13,6 +13,25 @@ class TestMachineUtil(TestCase):
         self.assertEqual(1, twos_comp_16bits(0x0001))
         self.assertEqual(2, twos_comp_16bits(0x0002))
         self.assertEqual(32767, twos_comp_16bits(0x7FFF))
+
+    def testTwosComp32bits(self):
+        self.assertEqual(-1, twos_comp(0xFFFFFFFF))
+        self.assertEqual(-2, twos_comp(0xFFFFFFFE))
+        self.assertEqual(-2147483648, twos_comp(0x80000000))
+        self.assertEqual(1, twos_comp(0x00000001))
+        self.assertEqual(2, twos_comp(0x00000002))
+        self.assertEqual(2147483647, twos_comp(0x7FFFFFFF))
+
+    def testNb2twos(self):
+        self.assertEqual(0, nb2twos(0))
+        self.assertEqual(1, nb2twos(1))
+        self.assertEqual(0xFFFFFFFF, nb2twos(-1))
+        self.assertEqual(0xFFFF, nb2twos(-1, nbits=16))
+        self.assertEqual(0xFFF6, nb2twos(-10, nbits=16))
+        self.assertEqual(0x8000, nb2twos(-2 ** 15, nbits=16))
+        self.assertEqual(0x7FFF, nb2twos(2 ** 15 - 1, nbits=16))
+        self.assertEqual(0x80000000, nb2twos(-2 ** 31, nbits=32))
+        self.assertEqual(0x7FFFFFFF, nb2twos(2 ** 31 - 1, nbits=32))
 
     def testBytes2Words(self):
         self.assertEqual((0xABCDEF01, ), tuple(bytes2words([0x01, 0xEF, 0xCD, 0xAB])))
@@ -93,3 +112,23 @@ class TestSimulator(TestCase):
             0x0000000A, 0x00000000
         ]
         self.assertEqual(tuple(code_stack), tuple(machine.dram.load_batch(0, len(code_stack))))
+
+    def testComparison(self):
+        machine = simulate("test_files/test_comparison.asm")
+        machine.run()
+        self.assertEqual(nb2twos(0), machine.sram.load(0))
+        self.assertEqual(nb2twos(1), machine.sram.load(2))
+        self.assertEqual(nb2twos(1), machine.sram.load(3))
+        self.assertEqual(nb2twos(0), machine.sram.load(4))
+
+    def testArithmetic(self):
+        machine = simulate("test_files/test_arithmetic.asm")
+        machine.run()
+        self.assertEqual(nb2twos(-2), machine.sram.load(10))
+        self.assertEqual(nb2twos(-2), machine.sram.load(11))
+        self.assertEqual(nb2twos(-18), machine.sram.load(12))
+        self.assertEqual(nb2twos(-18), machine.sram.load(13))
+        self.assertEqual(nb2twos(-80), machine.sram.load(14))
+        self.assertEqual(nb2twos(-80), machine.sram.load(15))
+        self.assertEqual(nb2twos(-1), machine.sram.load(16))
+        self.assertEqual(nb2twos(-1), machine.sram.load(17))
