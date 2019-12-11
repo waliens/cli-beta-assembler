@@ -1,6 +1,6 @@
 import pickle
 from math import ceil
-from operator import add, sub, mul, floordiv, and_, or_, lshift, xor, rshift
+from operator import add, sub, mul, and_, or_, lshift, xor, rshift
 
 from random import random, seed, randint
 from beta.assembler.assembler import assemble
@@ -28,6 +28,22 @@ def twos_comp(twos, nbits=32):
         v = -(((~twos) & mask) + 1)
     return v
 
+
+def nb2twos(d, nbits=32):
+    sign_bit = (1 << nbits)
+    mask = sign_bit - 1
+    if d >= 0:
+        return d & mask
+    else:
+        pos = (-1 * d) & mask
+        return sign_bit + (~pos) + 1
+
+
+def twos_op(op, nbits_op1=32, nbits_op2=32):
+    return lambda a, b: nb2twos(op(twos_comp(a, nbits=nbits_op1), twos_comp(b, nbits=nbits_op2)))
+
+def div2zero(a, b):
+    return -(abs(a) // abs(b)) if (a < 0) ^ (b < 0) else (a // b)
 
 class Memory(object):
     def __init__(self, size, step=1, read_only=None, silent=True):
@@ -134,26 +150,26 @@ class BetaMachine(object):
             0x1E: ("BNE / BT", None),
         }
         self._arith_instr = {
-            0x20: ("ADD", add),
-            0x21: ("SUB", sub),
-            0x22: ("MUL", mul),
-            0x23: ("DIV", floordiv),
-            0x24: ("COMPEQ", lambda a, b: int(twos_comp(a) == twos_comp(b))),
-            0x25: ("COMPLT", lambda a, b: int(twos_comp(a) < twos_comp(b))),
-            0x26: ("COMPLE", lambda a, b: int(twos_comp(a) <= twos_comp(b))),
+            0x20: ("ADD", twos_op(add)),
+            0x21: ("SUB", twos_op(sub)),
+            0x22: ("MUL", twos_op(mul)),
+            0x23: ("DIV", twos_op(div2zero)),
+            0x24: ("COMPEQ", twos_op(lambda a, b: int(a == b))),
+            0x25: ("COMPLT", twos_op(lambda a, b: int(a < b))),
+            0x26: ("COMPLE", twos_op(lambda a, b: int(a <= b))),
             0x28: ("AND", and_),
             0x29: ("OR", or_),
             0x2A: ("XOR", xor),
             0x2C: ("SHL", lshift),
             0x2D: ("SHR", rshift),
             0x2E: ("SRA", sra),
-            0x30: ("ADDC", add),
-            0x31: ("SUBC", sub),
-            0x32: ("MULC", mul),
-            0x33: ("DIVC", floordiv),
-            0x34: ("COMPEQC", lambda a, lit: int(twos_comp(a) == lit)),
-            0x35: ("COMPLTC", lambda a, lit: int(twos_comp(a) < lit)),
-            0x36: ("COMPLEC", lambda a, lit: int(twos_comp(a) <= lit)),
+            0x30: ("ADDC", twos_op(add, nbits_op2=16)),
+            0x31: ("SUBC", twos_op(sub, nbits_op2=16)),
+            0x32: ("MULC", twos_op(mul, nbits_op2=16)),
+            0x33: ("DIVC", twos_op(div2zero, nbits_op2=16)),
+            0x34: ("COMPEQC", twos_op((lambda a, b: int(a == b)), nbits_op2=16)),
+            0x35: ("COMPLTC", twos_op((lambda a, b: int(a < b)), nbits_op2=16)),
+            0x36: ("COMPLEC", twos_op((lambda a, b: int(a <= b)), nbits_op2=16)),
             0x38: ("ANDC", and_),
             0x39: ("ORC", or_),
             0x3A: ("XORC", xor),
