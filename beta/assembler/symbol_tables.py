@@ -27,7 +27,7 @@ class CascadeDict(dict):
         return CascadeDict(d)
 
     def __getitem__(self, item):
-        if item not in self.child:
+        if not self._child_contains(item):
             return self.parent[item]
         return super(CascadeDict, self).__getitem__(item)
 
@@ -42,8 +42,11 @@ class CascadeDict(dict):
     def items(self):
         return [(k, self[k]) for k in self.keys()]
 
+    def _child_contains(self, item):
+        return super(CascadeDict, self).__contains__(item)
+
     def __contains__(self, item):
-        return super(CascadeDict, self).__contains__(item) or item in self.parent
+        return self._child_contains(item) or item in self.parent
 
 
 def apply_dot_offset(tree, offset):
