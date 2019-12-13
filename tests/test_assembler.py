@@ -101,3 +101,8 @@ A(1) B(1)
             0xFF, 0x00, 0xFF, 0x77
         ]
         self.assertEqual(tuple(expected3), tuple(bytes3))
+
+    def testMacroIdOut(self):
+        bytes, _ = assemble("test_files/test_macro_id_out.asm")
+        expected = [0x01]
+        self.assertSequenceEqual(expected, bytes)
