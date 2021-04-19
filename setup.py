@@ -21,5 +21,5 @@ if __name__ == '__main__':
           description=DESCRIPTION,
           long_description=LONG_DESCRIPTION,
           platforms='any',
-          install_requires=['antlr4-python3-runtime'],
+          install_requires=['antlr4-python3-runtime==4.7.1'],
           packages=['beta', 'beta.assembler', 'beta.parsing', 'beta.simulator'])
